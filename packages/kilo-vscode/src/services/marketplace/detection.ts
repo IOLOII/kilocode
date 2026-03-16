@@ -14,7 +14,7 @@ export class InstallationDetector {
           (
             await Promise.all([
               this.detectFromConfig(this.paths.configPath("project", workspace)),
-              this.detectSkills(this.paths.skillsDir("project", workspace)),
+              ...this.paths.allSkillsDirs("project", workspace).map((dir) => this.detectSkills(dir)),
             ])
           ).flat(),
         )
@@ -24,7 +24,7 @@ export class InstallationDetector {
       (
         await Promise.all([
           this.detectFromConfig(this.paths.configPath("global")),
-          this.detectSkills(this.paths.skillsDir("global")),
+          ...this.paths.allSkillsDirs("global").map((dir) => this.detectSkills(dir)),
         ])
       ).flat(),
     )
