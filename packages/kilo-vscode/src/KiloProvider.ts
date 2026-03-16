@@ -1,3 +1,4 @@
+import * as os from "os"
 import * as path from "path"
 import * as vscode from "vscode"
 import { z } from "zod"
@@ -667,15 +668,50 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         }
         case "removeInstalledMarketplaceItem": {
           const workspace = this.getProjectDirectory(this.currentSession?.id)
-          const mp = this.getMarketplace()
           const scope = message.mpInstallOptions?.target ?? "project"
-          const result = await mp.remove(message.mpItem, scope, workspace)
-          this.postMessage({
-            type: "marketplaceRemoveResult",
-            success: result.success,
-            slug: result.slug,
-            error: result.error,
-          })
+
+          if (message.mpItem.type === "skill") {
+            // Use the CLI backend to remove skills so the skill registry and
+            // cache are properly invalidated (same path as handleRemoveSkill).
+            const base =
+              scope === "project"
+                ? path.join(workspace!, ".kilo", "skills")
+                : path.join(os.homedir(), ".kilo", "skills")
+            const location = path.join(base, message.mpItem.id, "SKILL.md")
+            try {
+              const dir = this.getWorkspaceDirectory()
+              const res = await this.client!.kilocode.removeSkill({ location, directory: dir })
+              if (res.error) {
+                this.postMessage({
+                  type: "marketplaceRemoveResult",
+                  success: false,
+                  slug: message.mpItem.id,
+                  error: String(res.error),
+                })
+              } else {
+                this.cachedSkillsMessage = null
+                vscode.window.showInformationMessage(`Successfully removed ${message.mpItem.name}`)
+                this.postMessage({ type: "marketplaceRemoveResult", success: true, slug: message.mpItem.id })
+              }
+            } catch (err) {
+              console.error("[Kilo New] marketplace removeSkill via CLI backend failed:", err)
+              this.cachedSkillsMessage = null
+              this.postMessage({
+                type: "marketplaceRemoveResult",
+                success: false,
+                slug: message.mpItem.id,
+                error: String(err),
+              })
+            }
+          } else {
+            const result = await this.getMarketplace().remove(message.mpItem, scope, workspace)
+            this.postMessage({
+              type: "marketplaceRemoveResult",
+              success: result.success,
+              slug: result.slug,
+              error: result.error,
+            })
+          }
           break
         }
       }
