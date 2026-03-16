@@ -447,8 +447,8 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
           this.fetchAndSendSkills().catch((e) => console.error("[Kilo New] fetchAndSendSkills failed:", e))
           break
         case "removeSkill":
-          this.handleRemoveSkill(message.location).catch((e) =>
-            console.error("[Kilo New] handleRemoveSkill failed:", e),
+          this.removeSkillViaCli(message.location).catch((e: unknown) =>
+            console.error("[Kilo New] removeSkill failed:", e),
           )
           break
         case "removeMode":
@@ -671,38 +671,16 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
           const scope = message.mpInstallOptions?.target ?? "project"
 
           if (message.mpItem.type === "skill") {
-            // Use the CLI backend to remove skills so the skill registry and
-            // cache are properly invalidated (same path as handleRemoveSkill).
+            // Route skill removal through the CLI backend so the skill
+            // registry and cache are properly invalidated.
             const base =
               scope === "project"
                 ? path.join(workspace!, ".kilo", "skills")
                 : path.join(os.homedir(), ".kilo", "skills")
             const location = path.join(base, message.mpItem.id, "SKILL.md")
-            try {
-              const dir = this.getWorkspaceDirectory()
-              const res = await this.client!.kilocode.removeSkill({ location, directory: dir })
-              if (res.error) {
-                this.postMessage({
-                  type: "marketplaceRemoveResult",
-                  success: false,
-                  slug: message.mpItem.id,
-                  error: String(res.error),
-                })
-              } else {
-                this.cachedSkillsMessage = null
-                vscode.window.showInformationMessage(`Successfully removed ${message.mpItem.name}`)
-                this.postMessage({ type: "marketplaceRemoveResult", success: true, slug: message.mpItem.id })
-              }
-            } catch (err) {
-              console.error("[Kilo New] marketplace removeSkill via CLI backend failed:", err)
-              this.cachedSkillsMessage = null
-              this.postMessage({
-                type: "marketplaceRemoveResult",
-                success: false,
-                slug: message.mpItem.id,
-                error: String(err),
-              })
-            }
+            const success = await this.removeSkillViaCli(location)
+            if (success) vscode.window.showInformationMessage(`Successfully removed ${message.mpItem.name}`)
+            this.postMessage({ type: "marketplaceRemoveResult", success, slug: message.mpItem.id })
           } else {
             const result = await this.getMarketplace().remove(message.mpItem, scope, workspace)
             this.postMessage({
@@ -1240,28 +1218,28 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
 
   /**
    * Remove a skill via the CLI backend (deletes from disk + clears cache), then refresh.
-   * The webview optimistically removes the skill from its list before this runs.
+   * Returns true on success, false on failure.
    * On failure, re-fetches skills so the webview reverts to the authoritative state.
    */
-  private async handleRemoveSkill(location: string): Promise<void> {
-    if (!this.client) return
+  private async removeSkillViaCli(location: string): Promise<boolean> {
+    if (!this.client) return false
     try {
       const dir = this.getWorkspaceDirectory()
       const result = await this.client.kilocode.removeSkill({ location, directory: dir })
       if (result.error) {
-        console.error("[Kilo New] KiloProvider: removeSkill returned error:", result.error)
+        console.error("[Kilo New] removeSkill returned error:", result.error)
         this.cachedSkillsMessage = null
         await this.fetchAndSendSkills()
-        return
+        return false
       }
     } catch (error) {
-      console.error("[Kilo New] KiloProvider: Failed to remove skill:", error)
+      console.error("[Kilo New] Failed to remove skill:", error)
       this.cachedSkillsMessage = null
       await this.fetchAndSendSkills()
-      return
+      return false
     }
-    // Invalidate cache so next requestSkills fetches fresh data
     this.cachedSkillsMessage = null
+    return true
   }
 
   /**
