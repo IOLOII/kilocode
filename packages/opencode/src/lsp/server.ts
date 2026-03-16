@@ -98,6 +98,45 @@ export namespace LSPServer {
     },
   }
 
+  // kilocode_change start - use tsgo --lsp --stdio instead of typescript-language-server
+  async function resolveTsgo(root: string): Promise<string | undefined> {
+    const native = await nativeTsgo(root)
+    if (native) return native
+    const wrapper = Bun.which("tsgo")
+    if (wrapper) return wrapper
+    return undefined
+  }
+
+  async function nativeTsgo(root: string): Promise<string | undefined> {
+    const pkg = `@typescript/native-preview-${process.platform}-${process.arch}`
+    let dir = root
+    while (true) {
+      const standard = path.join(dir, "node_modules", pkg, "lib", "tsgo")
+      if (await pathExists(standard)) return standard
+      const bun = path.join(dir, "node_modules", ".bun")
+      if (await pathExists(bun)) {
+        const match = await scanBun(bun, pkg)
+        if (match) return match
+      }
+      const parent = path.dirname(dir)
+      if (parent === dir) break
+      dir = parent
+    }
+    return undefined
+  }
+
+  async function scanBun(dir: string, pkg: string): Promise<string | undefined> {
+    const prefix = pkg.replace("/", "+")
+    const entries = await fs.readdir(dir).catch(() => [] as string[])
+    for (const entry of entries) {
+      if (!entry.startsWith(prefix + "@")) continue
+      const bin = path.join(dir, entry, "node_modules", pkg, "lib", "tsgo")
+      if (await pathExists(bin)) return bin
+    }
+    return undefined
+  }
+  // kilocode_change end
+
   export const Typescript: Info = {
     id: "typescript",
     root: NearestRoot(
@@ -105,26 +144,20 @@ export namespace LSPServer {
       ["deno.json", "deno.jsonc"],
     ),
     extensions: [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".mts", ".cts"],
+    // kilocode_change start - use tsgo --lsp --stdio instead of typescript-language-server
     async spawn(root) {
-      const tsserver = await Bun.resolve("typescript/lib/tsserver.js", Instance.directory).catch(() => {})
-      log.info("typescript server", { tsserver })
-      if (!tsserver) return
-      const proc = spawn(BunProc.which(), ["x", "typescript-language-server", "--stdio"], {
+      const bin = await resolveTsgo(root)
+      log.info("typescript server", { bin })
+      if (!bin) return
+      const proc = spawn(bin, ["--lsp", "--stdio"], {
         cwd: root,
-        env: {
-          ...process.env,
-          BUN_BE_BUN: "1",
-        },
+        env: { ...process.env },
       })
       return {
         process: proc,
-        initialization: {
-          tsserver: {
-            path: tsserver,
-          },
-        },
       }
     },
+    // kilocode_change end
   }
 
   export const Vue: Info = {
