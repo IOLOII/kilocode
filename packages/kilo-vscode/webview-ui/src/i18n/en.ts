@@ -889,6 +889,10 @@ export const dict = {
   "settings.aboutKiloCode.resetSettings.description":
     "Reset all Kilo Code extension settings to their default values. This does not affect CLI or backend configuration.",
   "settings.aboutKiloCode.resetSettings.button": "Reset All Settings",
+  "settings.aboutKiloCode.preRelease.title": "Pre-release Channel",
+  "settings.aboutKiloCode.preRelease.description":
+    "Switch to the pre-release channel to get early access to new features and bug fixes before they are officially released.",
+  "settings.aboutKiloCode.preRelease.button": "Switch to Pre-release",
 
   "settings.agentBehaviour.subtab.modes": "Modes",
   "settings.agentBehaviour.subtab.agents": "Agents",

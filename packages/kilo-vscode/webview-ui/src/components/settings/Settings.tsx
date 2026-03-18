@@ -187,6 +187,7 @@ const Settings: Component<SettingsProps> = (props) => {
             port={server.serverInfo()?.port ?? null}
             connectionState={server.connectionState()}
             extensionVersion={server.extensionVersion()}
+            isPreRelease={server.isPreRelease()}
             onMigrateClick={props.onMigrateClick}
           />
         </Tabs.Content>

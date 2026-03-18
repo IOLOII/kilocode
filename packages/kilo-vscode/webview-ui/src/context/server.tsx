@@ -20,6 +20,7 @@ interface ServerContextValue {
   vscodeLanguage: Accessor<string | undefined>
   languageOverride: Accessor<string | undefined>
   workspaceDirectory: Accessor<string>
+  isPreRelease: Accessor<boolean>
 }
 
 const ServerContext = createContext<ServerContextValue>()
@@ -39,6 +40,7 @@ export const ServerProvider: ParentComponent = (props) => {
   const [vscodeLanguage, setVscodeLanguage] = createSignal<string | undefined>()
   const [languageOverride, setLanguageOverride] = createSignal<string | undefined>()
   const [workspaceDirectory, setWorkspaceDirectory] = createSignal<string>("")
+  const [isPreRelease, setIsPreRelease] = createSignal(false)
 
   onMount(() => {
     const unsubscribe = vscode.onMessage((message: ExtensionMessage) => {
@@ -58,6 +60,9 @@ export const ServerProvider: ParentComponent = (props) => {
           }
           if (message.workspaceDirectory) {
             setWorkspaceDirectory(message.workspaceDirectory)
+          }
+          if (message.isPreRelease !== undefined) {
+            setIsPreRelease(message.isPreRelease)
           }
           break
 
@@ -143,6 +148,7 @@ export const ServerProvider: ParentComponent = (props) => {
     vscodeLanguage,
     languageOverride,
     workspaceDirectory,
+    isPreRelease,
   }
 
   return <ServerContext.Provider value={value}>{props.children}</ServerContext.Provider>

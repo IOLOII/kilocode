@@ -1,4 +1,4 @@
-import { Component } from "solid-js"
+import { Component, Show } from "solid-js"
 import { useLanguage } from "../../context/language"
 import { useVSCode } from "../../context/vscode"
 import type { ConnectionState } from "../../types/messages"
@@ -7,6 +7,7 @@ export interface AboutKiloCodeTabProps {
   port: number | null
   connectionState: ConnectionState
   extensionVersion?: string
+  isPreRelease?: boolean
   onMigrateClick?: () => void // legacy-migration
 }
 
@@ -88,6 +89,38 @@ const AboutKiloCodeTab: Component<AboutKiloCodeTabProps> = (props) => {
           <span style={valueStyle}>{props.extensionVersion ?? "—"}</span>
         </div>
       </div>
+
+      {/* Pre-release Channel */}
+      <Show when={!props.isPreRelease}>
+        <div style={sectionStyle}>
+          <h4 style={headingStyle}>{language.t("settings.aboutKiloCode.preRelease.title")}</h4>
+          <p
+            style={{
+              "font-size": "12px",
+              color: "var(--vscode-descriptionForeground)",
+              margin: "0 0 12px 0",
+              "line-height": "1.5",
+            }}
+          >
+            {language.t("settings.aboutKiloCode.preRelease.description")}
+          </p>
+          <button
+            type="button"
+            onClick={() => vscode.postMessage({ type: "switchToPreRelease" })}
+            style={{
+              background: "var(--vscode-button-background)",
+              color: "var(--vscode-button-foreground)",
+              border: "none",
+              padding: "6px 14px",
+              "border-radius": "2px",
+              cursor: "pointer",
+              "font-size": "12px",
+            }}
+          >
+            {language.t("settings.aboutKiloCode.preRelease.button")}
+          </button>
+        </div>
+      </Show>
 
       {/* Community & Support */}
       <div style={sectionStyle}>

@@ -53,6 +53,8 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private isWebviewReady = false
   private readonly extensionVersion =
     vscode.extensions.getExtension("kilocode.kilo-code")?.packageJSON?.version ?? "unknown"
+  private readonly isPreRelease =
+    vscode.extensions.getExtension("kilocode.kilo-code")?.packageJSON?.isPreReleaseVersion === true
   /** Cached providersLoaded payload so requestProviders can be served before client is ready */
   private cachedProvidersMessage: unknown = null
   /** Cached agentsLoaded payload so requestAgents can be served before client is ready */
@@ -231,6 +233,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         vscodeLanguage: vscode.env.language,
         languageOverride: langConfig.get<string>("language"),
         workspaceDirectory: this.getProjectDirectory(this.currentSession?.id),
+        isPreRelease: this.isPreRelease,
       })
     }
 
@@ -657,6 +660,9 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
           break
         case "resetAllSettings":
           await this.handleResetAllSettings()
+          break
+        case "switchToPreRelease":
+          await this.handleSwitchToPreRelease()
           break
         case "telemetry":
           TelemetryProxy.capture(message.event, message.properties)
@@ -2260,6 +2266,15 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.sendAutocompleteSettings()
     this.sendBrowserSettings()
     this.sendNotificationSettings()
+  }
+
+  private async handleSwitchToPreRelease(): Promise<void> {
+    await vscode.commands.executeCommand("workbench.extensions.installExtension", "kilocode.kilo-code", {
+      installPreReleaseVersion: true,
+    })
+    vscode.window.showInformationMessage(
+      "Switching to the pre-release channel. VS Code will prompt you to reload once the update is installed.",
+    )
   }
 
   /**

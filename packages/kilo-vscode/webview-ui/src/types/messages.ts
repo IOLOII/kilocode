@@ -389,6 +389,7 @@ export interface ReadyMessage {
   vscodeLanguage?: string
   languageOverride?: string
   workspaceDirectory?: string
+  isPreRelease?: boolean
 }
 
 export interface WorkspaceDirectoryChangedMessage {
@@ -1721,6 +1722,11 @@ export interface PreviewImageRequest {
   filename: string
 }
 
+// Switch to pre-release channel (webview → extension)
+export interface SwitchToPreReleaseRequest {
+  type: "switchToPreRelease"
+}
+
 // Set default base branch (webview → extension)
 export interface SetDefaultBaseBranchRequest {
   type: "agentManager.setDefaultBaseBranch"
@@ -1822,6 +1828,7 @@ export type WebviewMessage =
   | OpenSubAgentViewerRequest
   | PreviewImageRequest
   | SetDefaultBaseBranchRequest
+  | SwitchToPreReleaseRequest
   | FetchMarketplaceDataMessage
   | FilterMarketplaceItemsMessage
   | InstallMarketplaceItemMessage
