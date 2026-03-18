@@ -28,8 +28,8 @@ export const dict = {
   "command.settings.open": "設定を開く",
   "command.session.previous": "前のセッション",
   "command.session.next": "次のセッション",
-  "command.session.previous.unseen": "Previous unread session",
-  "command.session.next.unseen": "Next unread session",
+  "command.session.previous.unseen": "前の未読セッション",
+  "command.session.next.unseen": "次の未読セッション",
   "command.session.archive": "セッションをアーカイブ",
 
   "command.palette": "コマンドパレット",
@@ -78,6 +78,14 @@ export const dict = {
   "command.session.undo.description": "最後のメッセージを元に戻す",
   "command.session.redo": "やり直す",
   "command.session.redo.description": "元に戻したメッセージをやり直す",
+  "revert.banner.count_one": "{{count}} message reverted",
+  "revert.banner.count_other": "{{count}} messages reverted",
+  "revert.banner.redo": "Redo",
+  "revert.banner.redo.all": "Redo All",
+  "revert.banner.hint": "Send a new message to make this permanent",
+  "revert.turn.revert": "Revert to here",
+  "revert.turn.copy": "Copy message",
+  "revert.bottom.undo": "Undo Changes",
   "command.session.compact": "セッションを圧縮",
   "command.session.compact.description": "セッションを要約してコンテキストサイズを削減",
   "command.session.fork": "メッセージからフォーク",
@@ -154,6 +162,7 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "{{provider}}のモデルは利用できなくなりました。",
   "model.tag.free": "無料",
   "model.tag.latest": "最新",
+  "model.group.recommended": "推奨",
 
   "model.provider.anthropic": "Anthropic",
   "model.provider.openai": "OpenAI",
@@ -442,7 +451,7 @@ export const dict = {
 
   "notification.permission.title": "権限が必要です",
   "notification.permission.description": "{{projectName}} の {{sessionTitle}} が権限を必要としています",
-  "ui.permission.permissionRules": "権限ルール",
+  "ui.permission.manageAutoApprove": "自動承認ルールを管理",
   "ui.permission.rule.addToAllowed": "許可リストに追加",
   "ui.permission.rule.removeFromAllowed": "許可リストから削除",
   "ui.permission.rule.addToDenied": "拒否リストに追加",
@@ -686,6 +695,9 @@ export const dict = {
   "settings.providers.tag.config": "設定",
   "settings.providers.tag.custom": "カスタム",
   "settings.providers.tag.other": "その他",
+  "settings.providers.modeModels": "モードごとのモデル",
+  "settings.providers.modeModels.description":
+    "特定のモードのデフォルトモデルを上書きします。設定されていない場合、グローバルデフォルトモデルが使用されます。",
   "settings.models.title": "モデル",
   "settings.models.description": "モデル設定はここで構成できます。",
   "settings.agents.title": "エージェント",
@@ -833,12 +845,14 @@ export const dict = {
     "Kilo CodeはAIコーディングアシスタントです。機能の構築、バグの修正、コードベースの説明を依頼できます。",
   "session.messages.scrollToBottom": "下にスクロール",
   "session.status.writingResponse": "応答を作成中…",
+  "session.status.retry": "再試行中…",
   "session.status.retrying": "再試行中（{{ attempt }}回目）… {{ message }}",
   "session.status.working": "作業中…",
 
   "dialog.model.noProviders": "プロバイダーなし",
 
   "prompt.placeholder.connecting": "サーバーに接続中...",
+  "prompt.placeholder.error": "接続に失敗しました。出力パネルを確認するか、拡張機能を再起動してください。",
   "prompt.placeholder.default": "メッセージを入力... (Enterで送信、Shift+Enterで改行)",
 
   "context.usage.sessionCost": "セッションコスト",

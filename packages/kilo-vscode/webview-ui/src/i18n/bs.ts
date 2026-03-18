@@ -78,6 +78,14 @@ export const dict = {
   "command.session.undo.description": "Poništi posljednju poruku",
   "command.session.redo": "Vrati",
   "command.session.redo.description": "Vrati posljednju poništenu poruku",
+  "revert.banner.count_one": "{{count}} message reverted",
+  "revert.banner.count_other": "{{count}} messages reverted",
+  "revert.banner.redo": "Redo",
+  "revert.banner.redo.all": "Redo All",
+  "revert.banner.hint": "Send a new message to make this permanent",
+  "revert.turn.revert": "Revert to here",
+  "revert.turn.copy": "Copy message",
+  "revert.bottom.undo": "Undo Changes",
   "command.session.compact": "Sažmi sesiju",
   "command.session.compact.description": "Sažmi sesiju kako bi se smanjio kontekst",
   "command.session.fork": "Fork iz poruke",
@@ -156,6 +164,7 @@ export const dict = {
 
   "model.tag.free": "Besplatno",
   "model.tag.latest": "Najnovije",
+  "model.group.recommended": "Preporučeno",
   "model.provider.anthropic": "Anthropic",
   "model.provider.openai": "OpenAI",
   "model.provider.google": "Google",
@@ -447,7 +456,7 @@ export const dict = {
 
   "notification.permission.title": "Potrebna dozvola",
   "notification.permission.description": "{{sessionTitle}} u {{projectName}} traži dozvolu",
-  "ui.permission.permissionRules": "Pravila dozvola",
+  "ui.permission.manageAutoApprove": "Upravljanje pravilima automatskog odobravanja",
   "ui.permission.rule.addToAllowed": "Dodaj na listu dozvoljenih",
   "ui.permission.rule.removeFromAllowed": "Ukloni sa liste dozvoljenih",
   "ui.permission.rule.addToDenied": "Dodaj na listu odbijenih",
@@ -692,6 +701,9 @@ export const dict = {
   "settings.providers.tag.config": "Konfiguracija",
   "settings.providers.tag.custom": "Prilagođeno",
   "settings.providers.tag.other": "Ostalo",
+  "settings.providers.modeModels": "Model po režimu",
+  "settings.providers.modeModels.description":
+    "Zamijenite podrazumijevani model za određene režime. Ako nije postavljeno, koristi se globalni podrazumijevani model.",
   "settings.models.title": "Modeli",
   "settings.models.description": "Postavke modela će se ovdje moći podešavati.",
   "settings.agents.title": "Agenti",
@@ -839,12 +851,14 @@ export const dict = {
     "Kilo Code je AI asistent za programiranje. Zatražite da gradi funkcionalnosti, ispravlja greške ili objasni vašu bazu koda.",
   "session.messages.scrollToBottom": "Pomakni se na dno",
   "session.status.writingResponse": "Pisanje odgovora…",
+  "session.status.retry": "Ponovni pokušaj…",
   "session.status.retrying": "Ponovni pokušaj (pokušaj {{ attempt }})… {{ message }}",
   "session.status.working": "Radim…",
 
   "dialog.model.noProviders": "Nema pružatelja",
 
   "prompt.placeholder.connecting": "Povezivanje na server...",
+  "prompt.placeholder.error": "Povezivanje nije uspjelo. Provjerite panel za izlaz ili ponovo pokrenite ekstenziju.",
   "prompt.placeholder.default": "Unesite poruku... (Enter za slanje, Shift+Enter za novi red)",
 
   "context.usage.sessionCost": "Cijena sesije",

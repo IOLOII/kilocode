@@ -86,11 +86,6 @@ export const NewWorktreeDialog: Component<{ onClose: () => void; defaultBaseBran
   let textareaRef: HTMLTextAreaElement | undefined
 
   onMount(() => {
-    requestAnimationFrame(() => {
-      if (!textareaRef) return
-      textareaRef.focus()
-      textareaRef.select()
-    })
     setBranchesLoading(true)
     vscode.postMessage({ type: "agentManager.requestBranches" })
   })
@@ -247,7 +242,14 @@ export const NewWorktreeDialog: Component<{ onClose: () => void; defaultBaseBran
                   <For each={imageAttach.images()}>
                     {(img) => (
                       <div class="image-attachment">
-                        <img src={img.dataUrl} alt={img.filename} title={img.filename} />
+                        <img
+                          src={img.dataUrl}
+                          alt={img.filename}
+                          title={img.filename}
+                          onClick={() =>
+                            vscode.postMessage({ type: "previewImage", dataUrl: img.dataUrl, filename: img.filename })
+                          }
+                        />
                         <button
                           type="button"
                           class="image-attachment-remove"
@@ -265,6 +267,7 @@ export const NewWorktreeDialog: Component<{ onClose: () => void; defaultBaseBran
                 <div class="prompt-input-ghost-wrapper am-prompt-input-ghost-wrapper">
                   <textarea
                     ref={textareaRef}
+                    autofocus
                     class="prompt-input am-prompt-input"
                     placeholder={t(
                       isMac

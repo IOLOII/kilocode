@@ -16,7 +16,7 @@ import {
   Accessor,
   batch,
 } from "solid-js"
-import { createStore, produce } from "solid-js/store"
+import { createStore, produce, reconcile } from "solid-js/store"
 import { useVSCode } from "./vscode"
 import { useServer } from "./server"
 import { useProvider } from "./provider"
@@ -87,6 +87,13 @@ interface SessionContextValue {
   // All session statuses keyed by sessionID (for DataBridge)
   allStatusMap: () => Record<string, SessionStatusInfo>
 
+  // Current session family data (self + subagents) for DataBridge
+  familyData: (sessionID: string | undefined) => {
+    messages: Record<string, Message[]>
+    parts: Record<string, Part[]>
+    status: Record<string, SessionStatusInfo>
+  }
+
   // Parts for a specific message
   getParts: (messageID: string) => Part[]
 
@@ -135,7 +142,14 @@ interface SessionContextValue {
   currentVariant: () => string | undefined
   selectVariant: (value: string) => void
 
+  // Revert/undo state for the current session
+  revert: Accessor<SessionInfo["revert"]>
+  revertedCount: Accessor<number>
+  summary: Accessor<SessionInfo["summary"]>
+
   // Actions
+  revertSession: (messageID: string) => void
+  unrevertSession: () => void
   sendMessage: (text: string, providerID?: string, modelID?: string, files?: FileAttachment[]) => void
   abort: () => void
   compact: () => void
@@ -190,6 +204,7 @@ export const SessionProvider: ParentComponent = (props) => {
   }
 
   const [loading, setLoading] = createSignal(false)
+  const [loaded, setLoaded] = createSignal<Set<string>>(new Set())
 
   // Pending permissions
   const [permissions, setPermissions] = createSignal<PermissionRequest[]>([])
@@ -493,6 +508,10 @@ export const SessionProvider: ParentComponent = (props) => {
           handleSessionDeleted(message.sessionID)
           break
 
+        case "messageRemoved":
+          handleMessageRemoved(message.sessionID, message.messageID)
+          break
+
         case "error":
           // Only clear loading if the error is for the current session
           // (or has no sessionID for backwards compatibility)
@@ -555,6 +574,12 @@ export const SessionProvider: ParentComponent = (props) => {
 
   function handleMessagesLoaded(sessionID: string, messages: Message[]) {
     batch(() => {
+      setLoaded((prev) => {
+        if (prev.has(sessionID)) return prev
+        const next = new Set(prev)
+        next.add(sessionID)
+        return next
+      })
       if (sessionID === currentSessionID()) setLoading(false)
 
       // Preserve optimistic messages that haven't been confirmed yet.
@@ -565,15 +590,15 @@ export const SessionProvider: ParentComponent = (props) => {
         const loadedIds = new Set(messages.map((m) => m.id))
         const current = store.messages[sessionID] ?? []
         const orphans = current.filter((m) => pending.has(m.id) && !loadedIds.has(m.id))
-        setStore("messages", sessionID, [...messages, ...orphans])
+        setStore("messages", sessionID, reconcile([...messages, ...orphans], { key: "id" }))
       } else {
-        setStore("messages", sessionID, messages)
+        setStore("messages", sessionID, reconcile(messages, { key: "id" }))
       }
 
       // Also extract parts from messages
       for (const msg of messages) {
         if (msg.parts && msg.parts.length > 0) {
-          setStore("parts", msg.id, msg.parts)
+          setStore("parts", msg.id, reconcile(msg.parts, { key: "id" }))
         }
       }
     })
@@ -795,6 +820,42 @@ export const SessionProvider: ParentComponent = (props) => {
     return family
   }
 
+  function familyData(sessionID: string | undefined) {
+    if (!sessionID) {
+      return {
+        messages: {},
+        parts: {},
+        status: {},
+      }
+    }
+
+    const family = sessionFamily(sessionID)
+    const messages: Record<string, Message[]> = {}
+    const parts: Record<string, Part[]> = {}
+    const status: Record<string, SessionStatusInfo> = {}
+
+    for (const sid of family) {
+      const msgs = store.messages[sid]
+      if (msgs?.length) {
+        messages[sid] = msgs
+        for (const msg of msgs) {
+          const item = store.parts[msg.id]
+          if (!item?.length) continue
+          parts[msg.id] = item
+        }
+      }
+
+      const info = statusMap[sid]
+      if (info) status[sid] = info
+    }
+
+    return {
+      messages,
+      parts,
+      status,
+    }
+  }
+
   /** Return permissions scoped to the given session's family (self + subagents). */
   function scopedPermissions(sessionID: string | undefined): PermissionRequest[] {
     if (!sessionID) return []
@@ -903,10 +964,28 @@ export const SessionProvider: ParentComponent = (props) => {
     })
   }
 
+  // Matches desktop app's event-reducer.ts: message.removed handler.
+  // Splices the message from the store and deletes its parts.
+  function handleMessageRemoved(sessionID: string, messageID: string) {
+    setStore("messages", sessionID, (msgs = []) => msgs.filter((m) => m.id !== messageID))
+    setStore(
+      "parts",
+      produce((parts) => {
+        delete parts[messageID]
+      }),
+    )
+  }
+
   function handleCloudSessionDataLoaded(cloudSessionId: string, title: string, messages: Message[]) {
     if (cloudPreviewId() !== cloudSessionId) return
     const key = `cloud:${cloudSessionId}`
     batch(() => {
+      setLoaded((prev) => {
+        if (prev.has(key)) return prev
+        const next = new Set(prev)
+        next.add(key)
+        return next
+      })
       setStore("sessions", key, {
         id: key,
         title,
@@ -928,6 +1007,12 @@ export const SessionProvider: ParentComponent = (props) => {
     const cloudKey = `cloud:${cloudSessionId}`
     const cloudMessages = store.messages[cloudKey] ?? []
     batch(() => {
+      setLoaded((prev) => {
+        const next = new Set(prev)
+        next.add(session.id)
+        next.delete(cloudKey)
+        return next
+      })
       setStore("sessions", session.id, session)
 
       const pendingAgent = pendingAgentSelection()
@@ -1200,7 +1285,7 @@ export const SessionProvider: ParentComponent = (props) => {
       return
     }
     setCurrentSessionID(id)
-    setLoading(true)
+    setLoading(!loaded().has(id))
     vscode.postMessage({ type: "loadMessages", sessionID: id })
   }
 
@@ -1228,6 +1313,12 @@ export const SessionProvider: ParentComponent = (props) => {
         delete sessions[id]
       }),
     )
+    setLoaded((prev) => {
+      if (!prev.has(id)) return prev
+      const next = new Set(prev)
+      next.delete(id)
+      return next
+    })
     vscode.postMessage({ type: "deleteSession", sessionID: id })
   }
 
@@ -1261,6 +1352,47 @@ export const SessionProvider: ParentComponent = (props) => {
   const allStatusMap = () => statusMap as Record<string, SessionStatusInfo>
 
   const userMessages = createMemo(() => messages().filter((m) => m.role === "user"))
+
+  const revert = createMemo(() => {
+    const id = currentSessionID()
+    // revert can be null (cleared by unrevert) or undefined (never set) — treat both as "no revert"
+    return id ? (store.sessions[id]?.revert ?? undefined) : undefined
+  })
+
+  const revertedCount = createMemo(() => {
+    const boundary = revert()?.messageID
+    if (!boundary) return 0
+    return userMessages().filter((m) => m.id >= boundary).length
+  })
+
+  const summary = createMemo(() => {
+    const id = currentSessionID()
+    return id ? (store.sessions[id]?.summary ?? undefined) : undefined
+  })
+
+  function revertSession(messageID: string) {
+    const id = currentSessionID()
+    if (!id) return
+    // Restore the reverted user message's prompt text into the input.
+    // Dispatch as a window message so PromptInput picks it up via onMessage.
+    const parts = store.parts[messageID]
+    if (parts) {
+      const text = parts
+        .filter((p) => p.type === "text" && !(p as { synthetic?: boolean }).synthetic)
+        .map((p) => (p as { text: string }).text ?? "")
+        .join("")
+      if (text) window.postMessage({ type: "setChatBoxMessage", text }, "*")
+    }
+    vscode.postMessage({ type: "revertSession", sessionID: id, messageID })
+  }
+
+  function unrevertSession() {
+    const id = currentSessionID()
+    if (!id) return
+    // Clear the prompt input on full redo (matching TUI/desktop behavior)
+    window.postMessage({ type: "setChatBoxMessage", text: "" }, "*")
+    vscode.postMessage({ type: "unrevertSession", sessionID: id })
+  }
 
   function syncSession(sessionID: string) {
     vscode.postMessage({ type: "syncSession", sessionID })
@@ -1357,9 +1489,15 @@ export const SessionProvider: ParentComponent = (props) => {
     allMessages,
     allParts,
     allStatusMap,
+    familyData,
     variantList,
     currentVariant,
     selectVariant,
+    revert,
+    revertedCount,
+    summary,
+    revertSession,
+    unrevertSession,
     sendMessage,
     abort,
     compact,

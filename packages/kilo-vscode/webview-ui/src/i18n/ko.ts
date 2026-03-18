@@ -32,8 +32,8 @@ export const dict = {
   "command.settings.open": "설정 열기",
   "command.session.previous": "이전 세션",
   "command.session.next": "다음 세션",
-  "command.session.previous.unseen": "Previous unread session",
-  "command.session.next.unseen": "Next unread session",
+  "command.session.previous.unseen": "이전 읽지 않은 세션",
+  "command.session.next.unseen": "다음 읽지 않은 세션",
   "command.session.archive": "세션 보관",
 
   "command.palette": "명령 팔레트",
@@ -82,6 +82,14 @@ export const dict = {
   "command.session.undo.description": "마지막 메시지 실행 취소",
   "command.session.redo": "다시 실행",
   "command.session.redo.description": "마지막 실행 취소된 메시지 다시 실행",
+  "revert.banner.count_one": "{{count}} message reverted",
+  "revert.banner.count_other": "{{count}} messages reverted",
+  "revert.banner.redo": "Redo",
+  "revert.banner.redo.all": "Redo All",
+  "revert.banner.hint": "Send a new message to make this permanent",
+  "revert.turn.revert": "Revert to here",
+  "revert.turn.copy": "Copy message",
+  "revert.bottom.undo": "Undo Changes",
   "command.session.compact": "세션 압축",
   "command.session.compact.description": "컨텍스트 크기를 줄이기 위해 세션 요약",
   "command.session.fork": "메시지에서 분기",
@@ -158,6 +166,7 @@ export const dict = {
   "provider.disconnect.toast.disconnected.description": "{{provider}} 모델을 더 이상 사용할 수 없습니다.",
   "model.tag.free": "무료",
   "model.tag.latest": "최신",
+  "model.group.recommended": "추천",
 
   "model.provider.anthropic": "Anthropic",
   "model.provider.openai": "OpenAI",
@@ -445,7 +454,7 @@ export const dict = {
 
   "notification.permission.title": "권한 필요",
   "notification.permission.description": "{{projectName}}의 {{sessionTitle}}에서 권한이 필요합니다",
-  "ui.permission.permissionRules": "권한 규칙",
+  "ui.permission.manageAutoApprove": "자동 승인 규칙 관리",
   "ui.permission.rule.addToAllowed": "허용 목록에 추가",
   "ui.permission.rule.removeFromAllowed": "허용 목록에서 제거",
   "ui.permission.rule.addToDenied": "거부 목록에 추가",
@@ -687,6 +696,9 @@ export const dict = {
   "settings.providers.tag.config": "구성",
   "settings.providers.tag.custom": "사용자 지정",
   "settings.providers.tag.other": "기타",
+  "settings.providers.modeModels": "모드별 모델",
+  "settings.providers.modeModels.description":
+    "특정 모드의 기본 모델을 재정의합니다. 설정하지 않으면 전역 기본 모델이 사용됩니다.",
   "settings.models.title": "모델",
   "settings.models.description": "모델 설정은 여기서 구성할 수 있습니다.",
   "settings.agents.title": "에이전트",
@@ -833,12 +845,14 @@ export const dict = {
     "Kilo Code는 AI 코딩 어시스턴트입니다. 기능 구축, 버그 수정 또는 코드베이스 설명을 요청하세요.",
   "session.messages.scrollToBottom": "하단으로 스크롤",
   "session.status.writingResponse": "응답 작성 중...",
+  "session.status.retry": "재시도 중…",
   "session.status.retrying": "재시도 중 ({{ attempt }}번째 시도)… {{ message }}",
   "session.status.working": "작업 중...",
 
   "dialog.model.noProviders": "공급자 없음",
 
   "prompt.placeholder.connecting": "서버에 연결 중...",
+  "prompt.placeholder.error": "연결에 실패했습니다. 출력 패널을 확인하거나 확장 프로그램을 다시 시작하세요.",
   "prompt.placeholder.default": "메시지를 입력하세요... (Enter로 전송, Shift+Enter로 줄 바꿈)",
 
   "context.usage.sessionCost": "세션 비용",

@@ -1039,7 +1039,7 @@ export namespace Config {
       port: z.number().int().positive().optional().describe("Port to listen on"),
       hostname: z.string().optional().describe("Hostname to listen on"),
       mdns: z.boolean().optional().describe("Enable mDNS service discovery"),
-      mdnsDomain: z.string().optional().describe("Custom domain name for mDNS service (default: opencode.local)"),
+      mdnsDomain: z.string().optional().describe("Custom domain name for mDNS service (default: kilo.local)"), // kilocode_change
       cors: z.array(z.string()).optional().describe("Additional domains to allow for CORS"),
     })
     .strict()
@@ -1563,7 +1563,10 @@ export namespace Config {
     })
   }
 
-  export async function updateGlobal(config: Info) {
+  // kilocode_change start — add dispose option to skip Instance.disposeAll for permission-only changes
+  export async function updateGlobal(config: Info, options?: { dispose?: boolean }) {
+    const dispose = options?.dispose ?? true
+    // kilocode_change end
     const filepath = globalConfigFile()
     const before = await Filesystem.readText(filepath).catch((err: any) => {
       if (err.code === "ENOENT") return "{}"

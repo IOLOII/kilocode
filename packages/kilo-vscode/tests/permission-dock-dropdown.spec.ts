@@ -160,22 +160,6 @@ test.describe("Permission Dock Dropdown — write", () => {
     const root = page.locator("#storybook-root")
     await expect(root).toHaveScreenshot(["permission-dock-dropdown", "write-expanded-pending.png"])
   })
-
-  test("rules expanded — mixed decisions", async ({ page }) => {
-    await page.goto(storyUrl(STORY_ID), { waitUntil: "load" })
-    await disableAnimations(page)
-    await page.waitForSelector("#storybook-root *", { state: "attached" })
-    await openDropdown(page)
-
-    // Approve first rule, deny second (dispatchEvent bypasses tooltip overlays)
-    const approveButtons = page.locator('[data-slot="permission-rule-toggle"][data-variant="approve"]')
-    const denyButtons = page.locator('[data-slot="permission-rule-toggle"][data-variant="deny"]')
-    await approveButtons.first().dispatchEvent("click")
-    await denyButtons.nth(1).dispatchEvent("click")
-
-    const root = page.locator("#storybook-root")
-    await expect(root).toHaveScreenshot(["permission-dock-dropdown", "write-rules-mixed.png"])
-  })
 })
 
 // ---------------------------------------------------------------------------
@@ -272,6 +256,24 @@ test.describe("Permission Dock Dropdown — many rules", () => {
 
     const root = page.locator("#storybook-root")
     await expect(root).toHaveScreenshot(["permission-dock-dropdown", "many-rules-mixed.png"])
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Config pre-populated — rules show saved allow/deny state from config
+// ---------------------------------------------------------------------------
+
+test.describe("Permission Dock Dropdown — config pre-populated", () => {
+  const STORY_ID = "composite-webview--permission-dock-config-preloaded"
+
+  test("rules expanded — pre-populated from config (mixed allow/deny/pending)", async ({ page }) => {
+    await page.goto(storyUrl(STORY_ID), { waitUntil: "load" })
+    await disableAnimations(page)
+    await page.waitForSelector("#storybook-root *", { state: "attached" })
+    await openDropdown(page)
+
+    const root = page.locator("#storybook-root")
+    await expect(root).toHaveScreenshot(["permission-dock-dropdown", "config-preloaded-expanded.png"])
   })
 })
 
