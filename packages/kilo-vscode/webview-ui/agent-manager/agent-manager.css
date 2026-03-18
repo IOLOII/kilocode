@@ -1644,16 +1644,17 @@ button.am-section-toggle:hover .am-section-label {
   flex-direction: column;
 }
 
-.am-nv-dialog .am-prompt-input-wrapper {
+/* Prompt input overrides — target PromptInput's inner classes via the am-prefixed container */
+.am-prompt-input-container [class*="prompt-input-wrapper"] {
   flex: 1;
   min-height: 0;
 }
 
-.am-nv-dialog .am-prompt-input-ghost-wrapper {
+.am-prompt-input-container [class*="prompt-input-ghost-wrapper"] {
   height: 100%;
 }
 
-.am-nv-dialog .am-prompt-input {
+.am-prompt-input-container textarea {
   color: var(--vscode-input-foreground, var(--text-base));
   resize: none;
   width: 100%;
