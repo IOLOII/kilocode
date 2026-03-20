@@ -12,6 +12,12 @@ import { useDirectory } from "../../context/directory"
 import { useKV } from "../../context/kv"
 import { TodoItem } from "../../component/todo-item"
 
+// kilocode_change start
+function formatGB(bytes: number): string {
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`
+}
+// kilocode_change end
+
 export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
   const sync = useSync()
   const { theme } = useTheme()
@@ -59,6 +65,14 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
       percentage: model?.limit.context ? Math.round((total / model.limit.context) * 100) : null,
     }
   })
+
+  // kilocode_change start
+  const memory = createMemo(() => sync.data.memory)
+  const high = createMemo(() => {
+    const mem = memory()
+    return mem !== undefined && mem.rss > 2 * 1024 * 1024 * 1024
+  })
+  // kilocode_change end
 
   const directory = useDirectory()
   const kv = useKV()
@@ -109,6 +123,34 @@ export function Sidebar(props: { sessionID: string; overlay?: boolean }) {
               <text fg={theme.textMuted}>{context()?.percentage ?? 0}% used</text>
               <text fg={theme.textMuted}>{cost()} spent</text>
             </box>
+            {/* kilocode_change start */}
+            <Show when={high()}>
+              <box>
+                <box flexDirection="row" justifyContent="space-between">
+                  <text fg={theme.warning}>
+                    <b>Memory</b>
+                  </text>
+                  <text fg={theme.warning}>{formatGB(memory()!.rss)}</text>
+                </box>
+                <Show when={connectedMcpCount() > 0}>
+                  <text fg={theme.textMuted}>
+                    {connectedMcpCount()} MCP server{connectedMcpCount() > 1 ? "s" : ""} running
+                  </text>
+                </Show>
+                <Show when={(sync.data.config.plugin ?? []).length > 0}>
+                  <text fg={theme.textMuted}>
+                    {(sync.data.config.plugin ?? []).length} plugin
+                    {(sync.data.config.plugin ?? []).length > 1 ? "s" : ""} active
+                  </text>
+                </Show>
+                <text fg={theme.textMuted}>
+                  {messages().length >= 100 ? "100+" : messages().length} message
+                  {messages().length !== 1 ? "s" : ""} in session
+                </text>
+                <text fg={theme.textMuted}>/compact or /new to free memory</text>
+              </box>
+            </Show>
+            {/* kilocode_change end */}
             <Show when={mcpEntries().length > 0}>
               <box>
                 <box
