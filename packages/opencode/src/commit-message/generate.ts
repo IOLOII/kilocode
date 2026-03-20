@@ -110,6 +110,11 @@ function clean(text: string): string {
   return result.trim()
 }
 
+// Maximum time (ms) to wait for the LLM to produce a commit message before
+// aborting. Prevents the HTTP request from hanging indefinitely when the
+// provider is slow or the stream stalls (e.g. due to config state races).
+const TIMEOUT_MS = 30_000
+
 export async function generateCommitMessage(request: CommitMessageRequest): Promise<CommitMessageResponse> {
   const ctx = await getGitContext(request.path, request.selectedFiles)
   if (ctx.files.length === 0) {
@@ -141,38 +146,45 @@ export async function generateCommitMessage(request: CommitMessageRequest): Prom
     userMessage = `IMPORTANT: Generate a COMPLETELY DIFFERENT commit message from the previous one. The previous message was: "${request.previousMessage}". Use a different type, scope, or description approach.\n\n${userMessage}`
   }
 
-  const stream = await LLM.stream({
-    agent,
-    user: {
-      id: "commit-message",
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+
+  try {
+    const stream = await LLM.stream({
+      agent,
+      user: {
+        id: "commit-message",
+        sessionID: "commit-message",
+        role: "user",
+        model: {
+          providerID: model.providerID,
+          modelID: model.id,
+        },
+        time: {
+          created: Date.now(),
+          completed: Date.now(),
+        },
+      } as any,
+      tools: {},
+      model,
+      small: true,
+      messages: [
+        {
+          role: "user" as const,
+          content: userMessage,
+        },
+      ],
+      abort: controller.signal,
       sessionID: "commit-message",
-      role: "user",
-      model: {
-        providerID: model.providerID,
-        modelID: model.id,
-      },
-      time: {
-        created: Date.now(),
-        completed: Date.now(),
-      },
-    } as any,
-    tools: {},
-    model,
-    small: true,
-    messages: [
-      {
-        role: "user" as const,
-        content: userMessage,
-      },
-    ],
-    abort: new AbortController().signal,
-    sessionID: "commit-message",
-    system: [],
-    retries: 3,
-  })
+      system: [],
+      retries: 3,
+    })
 
-  const result = await stream.text
-  log.info("generated", { message: result })
+    const result = await stream.text
+    log.info("generated", { message: result })
 
-  return { message: clean(result) }
+    return { message: clean(result) }
+  } finally {
+    clearTimeout(timer)
+  }
 }
