@@ -27,6 +27,7 @@ import type {
   AgentManagerApplyWorktreeDiffResultMessage,
   AgentManagerApplyWorktreeDiffStatus,
   AgentManagerApplyWorktreeDiffConflict,
+  AgentManagerRevertWorktreeFileResultMessage,
   AgentManagerWorktreeStatsMessage,
   AgentManagerLocalStatsMessage,
   WorktreeFileDiff,
@@ -1309,6 +1310,24 @@ const AgentManagerContent: Component = () => {
         }
       }
 
+      if (msg.type === "agentManager.revertWorktreeFileResult") {
+        const ev = msg as AgentManagerRevertWorktreeFileResultMessage
+        // Clear reverting state for this file
+        setRevertingFiles((prev) => {
+          const set = new Set(prev[ev.sessionId] ?? [])
+          set.delete(ev.file)
+          const next = { ...prev }
+          if (set.size === 0) delete next[ev.sessionId]
+          else next[ev.sessionId] = set
+          return next
+        })
+        if (ev.status === "success") {
+          showToast({ variant: "success", title: t("agentManager.diff.revertSuccess"), description: ev.file })
+        } else {
+          showToast({ variant: "error", title: t("agentManager.diff.revertError"), description: ev.message })
+        }
+      }
+
       if (msg.type === "agentManager.worktreeStats") {
         const ev = msg as AgentManagerWorktreeStatsMessage
         const map: Record<string, WorktreeGitStats> = {}
@@ -1504,6 +1523,26 @@ const AgentManagerContent: Component = () => {
     if (!sessionId) return new Set<string>()
     return new Set(Object.keys(diffFileLoading()[sessionId] ?? {}))
   })
+
+  // Per-session reverting files state
+  const [revertingFiles, setRevertingFiles] = createSignal<Record<string, Set<string>>>({})
+
+  const revertingForCurrent = createMemo(() => {
+    const sessionId = currentDiffSessionId()
+    if (!sessionId) return new Set<string>()
+    return revertingFiles()[sessionId] ?? new Set<string>()
+  })
+
+  const handleRevertFile = (file: string) => {
+    const sessionId = currentDiffSessionId()
+    if (!sessionId) return
+    setRevertingFiles((prev) => {
+      const set = new Set(prev[sessionId] ?? [])
+      set.add(file)
+      return { ...prev, [sessionId]: set }
+    })
+    vscode.postMessage({ type: "agentManager.revertWorktreeFile", sessionId, file })
+  }
 
   const handleConfigureSetupScript = () => {
     vscode.postMessage({ type: "agentManager.configureSetupScript" })
@@ -2588,6 +2627,8 @@ const AgentManagerContent: Component = () => {
                       if (id) vscode.postMessage({ type: "agentManager.openFile", sessionId: id, filePath: file })
                       else if (selection() === LOCAL) vscode.postMessage({ type: "openFile", filePath: file })
                     }}
+                    onRevertFile={handleRevertFile}
+                    revertingFiles={revertingForCurrent()}
                   />
                 </div>
               </div>
@@ -2613,6 +2654,8 @@ const AgentManagerContent: Component = () => {
                   if (id) vscode.postMessage({ type: "agentManager.openFile", sessionId: id, filePath: file })
                   else if (selection() === LOCAL) vscode.postMessage({ type: "openFile", filePath: file })
                 }}
+                onRevertFile={handleRevertFile}
+                revertingFiles={revertingForCurrent()}
                 onClose={closeReviewTab}
               />
             </div>
