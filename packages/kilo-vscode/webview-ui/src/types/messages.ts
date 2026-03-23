@@ -1507,6 +1507,7 @@ export interface RequestChatCompletionMessage {
   text: string
   requestId: string
   history?: string[]
+  lastResponse?: string
 }
 
 export interface RequestFileSearchMessage {
