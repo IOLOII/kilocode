@@ -1,5 +1,6 @@
 import { Select } from "@opencode-ai/ui/select"
 import { showToast } from "@opencode-ai/ui/toast"
+import { Icon } from "@opencode-ai/ui/icon"
 import { Component, For, createMemo, type JSX } from "solid-js"
 import { useGlobalSync } from "@/context/global-sync"
 import { useLanguage } from "@/context/language"
@@ -9,12 +10,6 @@ type PermissionAction = "allow" | "ask" | "deny"
 type PermissionObject = Record<string, PermissionAction>
 type PermissionValue = PermissionAction | PermissionObject | string[] | undefined
 type PermissionMap = Record<string, PermissionValue>
-
-type PermissionItem = {
-  id: string
-  title: string
-  description: string
-}
 
 const ACTIONS = [
   { value: "allow", label: "settings.permissions.action.allow" },
@@ -162,7 +157,7 @@ export const SettingsPermissions: Component = () => {
     const map = toMap(before)
     const existing = map[id]
 
-    const nextValue =
+    const next =
       existing && typeof existing === "object" && !Array.isArray(existing) ? { ...existing, "*": action } : action
 
     const rollback = (err: unknown) => {
@@ -171,23 +166,34 @@ export const SettingsPermissions: Component = () => {
       showToast({ title: language.t("settings.permissions.toast.updateFailed.title"), description: message })
     }
 
-    globalSync.set("config", "permission", { ...map, [id]: nextValue })
-    globalSync.updateConfig({ permission: { [id]: nextValue } }).catch(rollback)
+    globalSync.set("config", "permission", { ...map, [id]: next })
+    globalSync.updateConfig({ permission: { [id]: next } }).catch(rollback)
   }
 
   return (
-    <div class="flex flex-col h-full overflow-y-auto no-scrollbar">
+    <div class="flex flex-col h-full overflow-y-auto no-scrollbar px-4 pb-10 sm:px-10 sm:pb-10">
       <div class="sticky top-0 z-10 bg-[linear-gradient(to_bottom,var(--surface-stronger-non-alpha)_calc(100%_-_24px),transparent)]">
-        <div class="flex flex-col gap-1 px-4 py-8 sm:p-8 max-w-[720px]">
+        <div class="flex flex-col gap-1 pt-6 pb-8">
           <h2 class="text-16-medium text-text-strong">{language.t("settings.permissions.title")}</h2>
-          <p class="text-14-regular text-text-weak">{language.t("settings.permissions.description")}</p>
+          <p class="text-12-regular text-text-weak">{language.t("settings.permissions.description")}</p>
         </div>
       </div>
 
-      <div class="flex flex-col gap-6 px-4 py-6 sm:p-8 sm:pt-6 max-w-[720px]">
-        <div class="flex flex-col gap-2">
-          <h3 class="text-14-medium text-text-strong">{language.t("settings.permissions.section.tools")}</h3>
-          <div class="border border-border-weak-base rounded-lg overflow-hidden">
+      <div class="flex flex-col gap-8 w-full">
+        {/* Info callout — default permissions + redeploy notice */}
+        <div class="flex gap-3 p-3 rounded-lg bg-surface-raised-base text-12-regular text-text-weak">
+          <div class="flex-shrink-0 text-text-weak">
+            <Icon name="warning" size="small" />
+          </div>
+          <p>
+            {language.t("settings.permissions.notice.defaults")} {language.t("settings.permissions.notice.redeploy")}
+          </p>
+        </div>
+
+        {/* Tool permissions */}
+        <div class="flex flex-col gap-1">
+          <h3 class="text-14-medium text-text-strong pb-2">{language.t("settings.permissions.section.tools")}</h3>
+          <div class="bg-surface-raised-base px-4 rounded-lg">
             <For each={ITEMS}>
               {(item) => (
                 <SettingsRow title={language.t(item.title)} description={language.t(item.description)}>
@@ -219,7 +225,7 @@ interface SettingsRowProps {
 
 const SettingsRow: Component<SettingsRowProps> = (props) => {
   return (
-    <div class="flex flex-wrap items-center justify-between gap-4 px-4 py-3 border-b border-border-weak-base last:border-none">
+    <div class="flex flex-wrap items-center justify-between gap-4 py-3 border-b border-border-weak-base last:border-none">
       <div class="flex flex-col gap-0.5 min-w-0">
         <span class="text-14-medium text-text-strong">{props.title}</span>
         <span class="text-12-regular text-text-weak">{props.description}</span>

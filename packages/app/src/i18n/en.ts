@@ -780,6 +780,8 @@ export const dict = {
   "settings.permissions.description": "Control what tools the server can use by default.",
   "settings.permissions.section.tools": "Tools",
   "settings.permissions.toast.updateFailed.title": "Failed to update permissions",
+  "settings.permissions.notice.defaults": "These settings control the default permissions for each tool.",
+  "settings.permissions.notice.redeploy": "You must redeploy your instance for permission changes to take effect.",
 
   "settings.permissions.action.allow": "Allow",
   "settings.permissions.action.ask": "Ask",
