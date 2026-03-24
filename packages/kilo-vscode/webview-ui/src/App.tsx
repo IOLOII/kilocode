@@ -1,6 +1,6 @@
 import { Component, createSignal, createMemo, Switch, Match, onMount, onCleanup } from "solid-js"
 import { ThemeProvider } from "@kilocode/kilo-ui/theme"
-import { DialogProvider } from "@kilocode/kilo-ui/context/dialog"
+import { DialogProvider, useDialog } from "@kilocode/kilo-ui/context/dialog"
 import { MarkedProvider } from "@kilocode/kilo-ui/context/marked"
 import { CodeComponentProvider } from "@kilocode/kilo-ui/context/code"
 import { DiffComponentProvider } from "@kilocode/kilo-ui/context/diff"
@@ -19,6 +19,7 @@ import { ConfigProvider } from "./context/config"
 import { SessionProvider, useSession } from "./context/session"
 import { LanguageProvider } from "./context/language"
 import { ChatView } from "./components/chat"
+import { FeedbackDialog } from "./components/chat/FeedbackDialog"
 import { MarketplaceView } from "./components/marketplace"
 import { registerExpandedTaskTool } from "./components/chat/TaskToolExpanded"
 import { registerVscodeToolOverrides } from "./components/chat/VscodeToolOverrides"
@@ -153,6 +154,7 @@ const AppContent: Component = () => {
   const [migrationReturnView, setMigrationReturnView] = createSignal<ViewType>("newTask") // legacy-migration
   const session = useSession()
   const server = useServer()
+  const dialog = useDialog()
 
   const handleViewAction = (action: string) => {
     switch (action) {
@@ -176,7 +178,7 @@ const AppContent: Component = () => {
         setCurrentView("settings")
         break
       case "openFeedback":
-        window.dispatchEvent(new CustomEvent("openFeedback"))
+        dialog.show(() => <FeedbackDialog />)
         break
       case "cycleAgentMode":
         if (document.hasFocus()) cycleAgent(1)
