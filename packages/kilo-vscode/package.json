@@ -100,7 +100,12 @@
         "icon": "$(settings-gear)"
       },
       {
-        "command": "kilo-code.new.supersizeSidebar",
+        "command": "kilo-code.new.supersizeSidebarAux",
+        "title": "Supersize",
+        "icon": "$(screen-full)"
+      },
+      {
+        "command": "kilo-code.new.supersizeSidebarPrimary",
         "title": "Supersize",
         "icon": "$(screen-full)"
       },
@@ -358,9 +363,14 @@
           "when": "view == kilo-code.SidebarProvider"
         },
         {
-          "command": "kilo-code.new.supersizeSidebar",
+          "command": "kilo-code.new.supersizeSidebarAux",
           "group": "navigation@6",
-          "when": "view == kilo-code.SidebarProvider"
+          "when": "view == kilo-code.SidebarProvider && auxiliaryBarFocus"
+        },
+        {
+          "command": "kilo-code.new.supersizeSidebarPrimary",
+          "group": "navigation@6",
+          "when": "view == kilo-code.SidebarProvider && sideBarFocus"
         }
       ],
       "scm/title": [

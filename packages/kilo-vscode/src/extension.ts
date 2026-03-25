@@ -181,17 +181,27 @@ export function activate(context: vscode.ExtensionContext) {
       settingsEditorProvider.openPanel("settings", tab)
     }),
     (() => {
-      let maximized = false
-      return vscode.commands.registerCommand("kilo-code.new.supersizeSidebar", async () => {
-        if (maximized) {
-          await vscode.commands.executeCommand("workbench.action.restoreAuxiliaryBar")
-          maximized = false
-        } else {
+      let auxMaximized = false
+      let primaryExpanded = false
+      return vscode.Disposable.from(
+        vscode.commands.registerCommand("kilo-code.new.supersizeSidebarAux", async () => {
+          if (auxMaximized) {
+            await vscode.commands.executeCommand("workbench.action.restoreAuxiliaryBar")
+          } else {
+            await vscode.commands.executeCommand(`${KiloProvider.viewType}.focus`)
+            await vscode.commands.executeCommand("workbench.action.maximizeAuxiliaryBar")
+          }
+          auxMaximized = !auxMaximized
+        }),
+        vscode.commands.registerCommand("kilo-code.new.supersizeSidebarPrimary", async () => {
           await vscode.commands.executeCommand(`${KiloProvider.viewType}.focus`)
-          await vscode.commands.executeCommand("workbench.action.maximizeAuxiliaryBar")
-          maximized = true
-        }
-      })
+          const cmd = primaryExpanded ? "workbench.action.decreaseViewSize" : "workbench.action.increaseViewSize"
+          for (let i = 0; i < 20; i++) {
+            await vscode.commands.executeCommand(cmd)
+          }
+          primaryExpanded = !primaryExpanded
+        }),
+      )
     })(),
     // legacy-migration start
     vscode.commands.registerCommand("kilo-code.new.openMigrationWizard", () => {
