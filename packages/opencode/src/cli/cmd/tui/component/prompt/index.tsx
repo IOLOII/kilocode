@@ -750,6 +750,18 @@ export function Prompt(props: PromptProps) {
     return !!current
   })
 
+  // kilocode_change start - resolved model name for kilo-auto variants
+  const resolved = createMemo(() => {
+    const m = local.model.current()
+    if (!m) return undefined
+    const variant = local.model.variant.current()
+    if (!variant) return undefined
+    const provider = sync.data.provider.find((x) => x.id === m.providerID)
+    const info = provider?.models[m.modelID]
+    return info?.variants?.[variant]?.name as string | undefined
+  })
+  // kilocode_change end
+
   const placeholderText = createMemo(() => {
     if (props.sessionID) return undefined
     if (store.mode === "shell") {
@@ -1031,6 +1043,11 @@ export function Prompt(props: PromptProps) {
                     <text>
                       <span style={{ fg: theme.warning, bold: true }}>{local.model.variant.current()}</span>
                     </text>
+                    {/* kilocode_change start - show resolved model name */}
+                    <Show when={resolved()}>
+                      <text fg={theme.textMuted}>({resolved()})</text>
+                    </Show>
+                    {/* kilocode_change end */}
                   </Show>
                 </box>
               </Show>

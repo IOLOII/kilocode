@@ -951,6 +951,15 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   })
 
   const variants = createMemo(() => ["default", ...local.model.variant.list()])
+  // kilocode_change start - resolved model name for kilo-auto variants
+  const resolved = createMemo(() => {
+    const m = local.model.current()
+    if (!m?.variants) return undefined
+    const variant = local.model.variant.current()
+    if (!variant) return undefined
+    return (m.variants[variant] as Record<string, unknown>)?.name as string | undefined
+  })
+  // kilocode_change end
   const accepting = createMemo(() => {
     const id = params.id
     if (!id) return permission.isAutoAcceptingDirectory(sdk.directory)
@@ -1436,6 +1445,8 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                         </Show>
                         <span class="truncate">
                           {local.model.current()?.name ?? language.t("dialog.model.select.title")}
+                          {/* kilocode_change */}
+                          <Show when={resolved()}>{(name) => <span class="text-text-weak"> ({name()})</span>}</Show>
                         </span>
                         <Icon name="chevron-down" size="small" class="shrink-0" />
                       </Button>
@@ -1472,6 +1483,8 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
                       </Show>
                       <span class="truncate">
                         {local.model.current()?.name ?? language.t("dialog.model.select.title")}
+                        {/* kilocode_change */}
+                        <Show when={resolved()}>{(name) => <span class="text-text-weak"> ({name()})</span>}</Show>
                       </span>
                       <Icon name="chevron-down" size="small" class="shrink-0" />
                     </ModelSelectorPopover>

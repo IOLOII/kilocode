@@ -168,6 +168,24 @@ export namespace ModelsDev {
       }
     }
 
+    // Enrich kilo-auto variant values with display names of resolved models
+    const kilo = providers["kilo"]
+    if (kilo) {
+      for (const model of Object.values(kilo.models)) {
+        if (!model.variants) continue
+        for (const variant of Object.values(model.variants)) {
+          const id = variant.model
+          if (typeof id !== "string") continue
+          const slash = id.indexOf("/")
+          if (slash === -1) continue
+          const pid = id.slice(0, slash)
+          const mid = id.slice(slash + 1)
+          const resolved = providers[pid]?.models[mid]
+          if (resolved?.name) variant.name = resolved.name
+        }
+      }
+    }
+
     return providers
     // kilocode_change end
   }
