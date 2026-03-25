@@ -10,7 +10,7 @@ import { useDialog } from "@kilocode/kilo-ui/context/dialog"
 import { useConfig } from "../../context/config"
 import { useSession } from "../../context/session"
 import { useLanguage } from "../../context/language"
-import type { AgentInfo, SkillInfo } from "../../types/messages"
+import type { SkillInfo } from "../../types/messages"
 import ModeEditView from "./ModeEditView"
 import ModeCreateView from "./ModeCreateView"
 
@@ -56,7 +56,7 @@ type AgentView = "list" | "create" | "edit"
 
 const AgentBehaviourTab: Component = () => {
   const language = useLanguage()
-  const { config, updateConfig, saveConfig } = useConfig()
+  const { config, updateConfig } = useConfig()
   const session = useSession()
   const dialog = useDialog()
   const [activeSubtab, setActiveSubtab] = createSignal<SubtabId>("agents")
@@ -194,49 +194,20 @@ const AgentBehaviourTab: Component = () => {
     ))
   }
 
+  // Remove a mode by marking it for deletion in the config draft. The Save Bar
+  // acts as confirmation — the user can Discard to undo. No dialog needed.
   const removeMode = (name: string) => {
     const existing = config().agent ?? {}
     if (existing[name]) {
-      // Config-based mode: null sentinel deletes the key, then persist immediately.
-      // Deletion is confirmed by the user via dialog so it should not require a
-      // second Save Bar click — auto-save after setting the null.
       updateConfig({ agent: { ...existing, [name]: null } } as any)
-      saveConfig()
     } else {
-      // File-based mode (.md/yaml): use direct removal path
       session.removeMode(name)
     }
-    // Hide from list immediately
     setPending((prev) => new Set([...prev, name]))
     if (editingAgent() === name) {
       setAgentView("list")
       setEditingAgent("")
     }
-  }
-
-  const confirmRemoveMode = (agent: AgentInfo) => {
-    dialog.show(() => (
-      <Dialog title={language.t("settings.agentBehaviour.removeMode.title")} fit>
-        <div class="dialog-confirm-body">
-          <span>{language.t("settings.agentBehaviour.removeMode.confirm", { name: agent.name })}</span>
-          <div class="dialog-confirm-actions">
-            <Button variant="ghost" size="large" onClick={() => dialog.close()}>
-              {language.t("common.cancel")}
-            </Button>
-            <Button
-              variant="primary"
-              size="large"
-              onClick={() => {
-                dialog.close()
-                setTimeout(() => removeMode(agent.name), 150)
-              }}
-            >
-              {language.t("settings.agentBehaviour.removeMode.button")}
-            </Button>
-          </div>
-        </div>
-      </Dialog>
-    ))
   }
 
   const startEdit = (name: string) => {
@@ -252,7 +223,8 @@ const AgentBehaviourTab: Component = () => {
   const renderAgentsSubtab = () => {
     const view = agentView()
     if (view === "create") return <ModeCreateView taken={agentNames()} onBack={back} />
-    if (view === "edit") return <ModeEditView name={editingAgent()} onBack={back} onRemove={confirmRemoveMode} />
+    if (view === "edit")
+      return <ModeEditView name={editingAgent()} onBack={back} onRemove={() => removeMode(editingAgent())} />
 
     return (
       <div>
@@ -377,8 +349,7 @@ const AgentBehaviourTab: Component = () => {
                           icon="close"
                           onClick={(e: MouseEvent) => {
                             e.stopPropagation()
-                            const a = agent()
-                            if (a) confirmRemoveMode(a)
+                            removeMode(name)
                           }}
                         />
                       </Show>

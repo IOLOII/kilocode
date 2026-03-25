@@ -7,13 +7,13 @@ import { IconButton } from "@kilocode/kilo-ui/icon-button"
 import { useConfig } from "../../context/config"
 import { useSession } from "../../context/session"
 import { useLanguage } from "../../context/language"
-import type { AgentConfig, AgentInfo } from "../../types/messages"
+import type { AgentConfig } from "../../types/messages"
 import SettingsRow from "./SettingsRow"
 
 interface Props {
   name: string
   onBack: () => void
-  onRemove: (agent: AgentInfo) => void
+  onRemove: () => void
 }
 
 const ModeEditView: Component<Props> = (props) => {
@@ -54,15 +54,7 @@ const ModeEditView: Component<Props> = (props) => {
           </span>
         </div>
         <Show when={!native()}>
-          <IconButton
-            size="small"
-            variant="ghost"
-            icon="close"
-            onClick={() => {
-              const a = agent()
-              if (a) props.onRemove(a)
-            }}
-          />
+          <IconButton size="small" variant="ghost" icon="close" onClick={() => props.onRemove()} />
         </Show>
       </div>
 
