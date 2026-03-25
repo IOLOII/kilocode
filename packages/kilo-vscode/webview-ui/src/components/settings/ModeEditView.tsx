@@ -17,7 +17,12 @@ interface Props {
   onRemove: (agent: AgentInfo) => void
 }
 
-const variantOptions = [
+interface VariantOption {
+  value: string
+  label: string
+}
+
+const BUILTIN_VARIANTS: VariantOption[] = [
   { value: "", label: "Default" },
   { value: "none", label: "None" },
   { value: "minimal", label: "Minimal" },
@@ -27,6 +32,8 @@ const variantOptions = [
   { value: "xhigh", label: "Extra High" },
   { value: "max", label: "Max" },
 ]
+
+const known = new Set(BUILTIN_VARIANTS.map((o) => o.value))
 
 const ModeEditView: Component<Props> = (props) => {
   const language = useLanguage()
@@ -40,6 +47,13 @@ const ModeEditView: Component<Props> = (props) => {
   const native = () => agent()?.native ?? false
 
   const cfg = createMemo<AgentConfig>(() => config().agent?.[props.name] ?? {})
+
+  // Build variant options dynamically so custom/gateway-defined values show up
+  const variants = createMemo<VariantOption[]>(() => {
+    const current = cfg().variant ?? ""
+    if (!current || known.has(current)) return BUILTIN_VARIANTS
+    return [...BUILTIN_VARIANTS, { value: current, label: current }]
+  })
 
   const update = (partial: Partial<AgentConfig>) => {
     const existing = config().agent ?? {}
@@ -142,8 +156,8 @@ const ModeEditView: Component<Props> = (props) => {
           description={language.t("settings.agentBehaviour.variant.description")}
         >
           <Select
-            options={variantOptions}
-            current={variantOptions.find((o) => o.value === (cfg().variant ?? ""))}
+            options={variants()}
+            current={variants().find((o) => o.value === (cfg().variant ?? ""))}
             value={(o) => o.value}
             label={(o) => o.label}
             onSelect={(o) => {
