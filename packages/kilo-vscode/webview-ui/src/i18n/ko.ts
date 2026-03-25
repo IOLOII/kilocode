@@ -1037,6 +1037,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "샘플링 온도 (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "핵 샘플링 매개변수 (0-1)",
+  "settings.agentBehaviour.variant.title": "기본 사고 노력",
+  "settings.agentBehaviour.variant.description": "이 에이전트의 기본 사고/추론 노력 수준",
   "settings.agentBehaviour.maxSteps.title": "최대 단계",
   "settings.agentBehaviour.maxSteps.description": "최대 에이전트 반복 횟수",
   "settings.agentBehaviour.discoveredSkills": "검색된 스킬",

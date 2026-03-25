@@ -1060,6 +1060,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "Température d'échantillonnage (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "Paramètre d'échantillonnage nucleus (0-1)",
+  "settings.agentBehaviour.variant.title": "Effort de réflexion par défaut",
+  "settings.agentBehaviour.variant.description": "Niveau d'effort de réflexion/raisonnement par défaut pour cet agent",
   "settings.agentBehaviour.maxSteps.title": "Étapes max.",
   "settings.agentBehaviour.maxSteps.description": "Itérations maximales de l'agent",
   "settings.agentBehaviour.discoveredSkills": "Compétences découvertes",

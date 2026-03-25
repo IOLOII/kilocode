@@ -323,6 +323,7 @@ export interface AgentConfig {
   model?: string | null
   prompt?: string
   description?: string
+  variant?: string
   mode?: "subagent" | "primary" | "all"
   temperature?: number
   top_p?: number

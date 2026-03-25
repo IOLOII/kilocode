@@ -1050,6 +1050,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "Sampling temperatuur (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "Nucleus sampling parameter (0-1)",
+  "settings.agentBehaviour.variant.title": "Standaard denkinspanning",
+  "settings.agentBehaviour.variant.description": "Standaard denk-/redeneringsinspanningsniveau voor deze agent",
   "settings.agentBehaviour.maxSteps.title": "Max Stappen",
   "settings.agentBehaviour.maxSteps.description": "Maximale agent iteraties",
   "settings.agentBehaviour.discoveredSkills": "Ontdekte Skills",

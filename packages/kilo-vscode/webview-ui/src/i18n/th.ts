@@ -1033,6 +1033,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "อุณหภูมิการสุ่มตัวอย่าง (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "พารามิเตอร์ nucleus sampling (0-1)",
+  "settings.agentBehaviour.variant.title": "ระดับความพยายามในการคิดเริ่มต้น",
+  "settings.agentBehaviour.variant.description": "ระดับความพยายามในการคิด/ใช้เหตุผลเริ่มต้นสำหรับเอเจนต์นี้",
   "settings.agentBehaviour.maxSteps.title": "ขั้นตอนสูงสุด",
   "settings.agentBehaviour.maxSteps.description": "จำนวนรอบเอเจนต์สูงสุด",
   "settings.agentBehaviour.discoveredSkills": "ทักษะที่ค้นพบ",

@@ -1026,6 +1026,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "采样温度（0-2）",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "核采样参数（0-1）",
+  "settings.agentBehaviour.variant.title": "默认思考力度",
+  "settings.agentBehaviour.variant.description": "此代理的默认思考/推理力度级别",
   "settings.agentBehaviour.maxSteps.title": "最大步数",
   "settings.agentBehaviour.maxSteps.description": "最大智能体迭代次数",
   "settings.agentBehaviour.discoveredSkills": "已发现的技能",

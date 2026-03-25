@@ -1049,6 +1049,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "Örnekleme sıcaklığı (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "Çekirdek örnekleme parametresi (0-1)",
+  "settings.agentBehaviour.variant.title": "Varsayılan Düşünme Çabası",
+  "settings.agentBehaviour.variant.description": "Bu ajan için varsayılan düşünme/akıl yürütme çaba düzeyi",
   "settings.agentBehaviour.maxSteps.title": "Maksimum Adım",
   "settings.agentBehaviour.maxSteps.description": "Maksimum ajanlık yinelemesi",
   "settings.agentBehaviour.discoveredSkills": "Keşfedilen Beceriler",

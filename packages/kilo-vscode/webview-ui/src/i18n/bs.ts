@@ -1045,6 +1045,9 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "Temperatura uzorkovanja (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "Nucleus parametar uzorkovanja (0-1)",
+  "settings.agentBehaviour.variant.title": "Podrazumijevani nivo razmišljanja",
+  "settings.agentBehaviour.variant.description":
+    "Podrazumijevani nivo napora razmišljanja/zaključivanja za ovog agenta",
   "settings.agentBehaviour.maxSteps.title": "Maks. koraci",
   "settings.agentBehaviour.maxSteps.description": "Maksimalne iteracije agenta",
   "settings.agentBehaviour.discoveredSkills": "Otkrivene vještine",

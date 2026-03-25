@@ -1,5 +1,6 @@
 import { Component, Show, createMemo } from "solid-js"
 import { TextField } from "@kilocode/kilo-ui/text-field"
+import { Select } from "@kilocode/kilo-ui/select"
 import { Card } from "@kilocode/kilo-ui/card"
 import { Button } from "@kilocode/kilo-ui/button"
 import { IconButton } from "@kilocode/kilo-ui/icon-button"
@@ -15,6 +16,14 @@ interface Props {
   onBack: () => void
   onRemove: (agent: AgentInfo) => void
 }
+
+const variantOptions = [
+  { value: "", label: "Default" },
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+  { value: "max", label: "Max" },
+]
 
 const ModeEditView: Component<Props> = (props) => {
   const language = useLanguage()
@@ -122,6 +131,25 @@ const ModeEditView: Component<Props> = (props) => {
             value={cfg().model ?? ""}
             placeholder="e.g. anthropic/claude-sonnet-4-20250514"
             onChange={(val) => update({ model: val || undefined })}
+          />
+        </SettingsRow>
+
+        <SettingsRow
+          title={language.t("settings.agentBehaviour.variant.title")}
+          description={language.t("settings.agentBehaviour.variant.description")}
+        >
+          <Select
+            options={variantOptions}
+            current={variantOptions.find((o) => o.value === (cfg().variant ?? ""))}
+            value={(o) => o.value}
+            label={(o) => o.label}
+            onSelect={(o) => {
+              if (!o) return
+              update({ variant: o.value || undefined })
+            }}
+            variant="secondary"
+            size="small"
+            triggerVariant="settings"
           />
         </SettingsRow>
 

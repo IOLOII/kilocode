@@ -1046,6 +1046,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "Sampling temperature (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "Nucleus sampling parameter (0-1)",
+  "settings.agentBehaviour.variant.title": "Default Thinking Effort",
+  "settings.agentBehaviour.variant.description": "Default thinking/reasoning effort level for this agent",
   "settings.agentBehaviour.maxSteps.title": "Max Steps",
   "settings.agentBehaviour.maxSteps.description": "Maximum agentic iterations",
   "settings.agentBehaviour.discoveredSkills": "Discovered Skills",

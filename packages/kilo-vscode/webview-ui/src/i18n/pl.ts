@@ -1043,6 +1043,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "Temperatura próbkowania (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "Parametr próbkowania nucleus (0-1)",
+  "settings.agentBehaviour.variant.title": "Domyślny poziom myślenia",
+  "settings.agentBehaviour.variant.description": "Domyślny poziom wysiłku myślenia/rozumowania dla tego agenta",
   "settings.agentBehaviour.maxSteps.title": "Maks. kroki",
   "settings.agentBehaviour.maxSteps.description": "Maksymalna liczba iteracji agenta",
   "settings.agentBehaviour.discoveredSkills": "Wykryte umiejętności",

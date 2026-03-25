@@ -1045,6 +1045,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "Temperatura de amostragem (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "Parâmetro de amostragem nucleus (0-1)",
+  "settings.agentBehaviour.variant.title": "Esforço de Pensamento Padrão",
+  "settings.agentBehaviour.variant.description": "Nível padrão de esforço de pensamento/raciocínio para este agente",
   "settings.agentBehaviour.maxSteps.title": "Passos máximos",
   "settings.agentBehaviour.maxSteps.description": "Iterações máximas do agente",
   "settings.agentBehaviour.discoveredSkills": "Habilidades descobertas",

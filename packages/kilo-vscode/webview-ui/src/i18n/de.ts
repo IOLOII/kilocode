@@ -1058,6 +1058,8 @@ export const dict = {
   "settings.agentBehaviour.temperature.description": "Sampling-Temperatur (0-2)",
   "settings.agentBehaviour.topP.title": "Top P",
   "settings.agentBehaviour.topP.description": "Nucleus-Sampling-Parameter (0-1)",
+  "settings.agentBehaviour.variant.title": "Standard-Denkaufwand",
+  "settings.agentBehaviour.variant.description": "Standard-Denk-/Schlussfolgerungsaufwand für diesen Agenten",
   "settings.agentBehaviour.maxSteps.title": "Max. Schritte",
   "settings.agentBehaviour.maxSteps.description": "Maximale Agent-Iterationen",
   "settings.agentBehaviour.discoveredSkills": "Erkannte Skills",
