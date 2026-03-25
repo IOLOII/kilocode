@@ -56,7 +56,7 @@ type AgentView = "list" | "create" | "edit"
 
 const AgentBehaviourTab: Component = () => {
   const language = useLanguage()
-  const { config, updateConfig } = useConfig()
+  const { config, updateConfig, saveConfig } = useConfig()
   const session = useSession()
   const dialog = useDialog()
   const [activeSubtab, setActiveSubtab] = createSignal<SubtabId>("agents")
@@ -197,8 +197,11 @@ const AgentBehaviourTab: Component = () => {
   const removeMode = (name: string) => {
     const existing = config().agent ?? {}
     if (existing[name]) {
-      // Config-based mode: null sentinel deletes the key on save
+      // Config-based mode: null sentinel deletes the key, then persist immediately.
+      // Deletion is confirmed by the user via dialog so it should not require a
+      // second Save Bar click — auto-save after setting the null.
       updateConfig({ agent: { ...existing, [name]: null } } as any)
+      saveConfig()
     } else {
       // File-based mode (.md/yaml): use direct removal path
       session.removeMode(name)
