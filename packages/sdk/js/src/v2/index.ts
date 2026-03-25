@@ -11,7 +11,7 @@ export async function createKilo(options?: ServerOptions) {
   })
 
   // kilocode_change start - pass Basic Auth header so client can talk to password-protected server
-  const auth = `Basic ${Buffer.from(`kilo:${server.password}`).toString("base64")}`
+  const auth = `Basic ${Buffer.from(`${process.env.KILO_SERVER_USERNAME ?? "kilo"}:${server.password}`).toString("base64")}`
   const client = createKiloClient({
     baseUrl: server.url,
     headers: { Authorization: auth },
