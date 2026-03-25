@@ -1067,6 +1067,9 @@ export const dict = {
   "settings.agentBehaviour.removeMode.confirm":
     'ต้องการลบโหมด "{{name}}" หรือไม่? การดำเนินการนี้จะปิดใช้งานโหมดโดยอัปเดตการกำหนดค่าของคุณ',
   "settings.agentBehaviour.removeMode.button": "ลบ",
+  "settings.agentBehaviour.mcp.enabled": "เปิดใช้งาน",
+  "settings.agentBehaviour.mcp.disabled": "ปิดใช้งาน",
+  "settings.agentBehaviour.mcp.toggle": "เปิด/ปิดใช้งานเซิร์ฟเวอร์ MCP",
   "settings.agentBehaviour.removeMcp.title": "ลบเซิร์ฟเวอร์ MCP",
   "settings.agentBehaviour.removeMcp.confirm":
     'ต้องการลบเซิร์ฟเวอร์ MCP "{{name}}" หรือไม่? การดำเนินการนี้จะลบออกจากการกำหนดค่าของคุณ',

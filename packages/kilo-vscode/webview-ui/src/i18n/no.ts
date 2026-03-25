@@ -1078,6 +1078,9 @@ export const dict = {
   "settings.agentBehaviour.removeMode.confirm":
     'Vil du fjerne modusen "{{name}}"? Dette vil deaktivere modusen ved å oppdatere konfigurasjonen din.',
   "settings.agentBehaviour.removeMode.button": "Fjern",
+  "settings.agentBehaviour.mcp.enabled": "Aktivert",
+  "settings.agentBehaviour.mcp.disabled": "Deaktivert",
+  "settings.agentBehaviour.mcp.toggle": "Aktiver/deaktiver MCP-server",
   "settings.agentBehaviour.removeMcp.title": "Fjern MCP-server",
   "settings.agentBehaviour.removeMcp.confirm":
     'Vil du fjerne MCP-serveren "{{name}}"? Dette vil fjerne den fra konfigurasjonen din.',

@@ -1,6 +1,7 @@
 import { Component, createSignal, createMemo, createEffect, For, Show } from "solid-js"
 import { Select } from "@kilocode/kilo-ui/select"
 import { TextField } from "@kilocode/kilo-ui/text-field"
+import { Switch } from "@kilocode/kilo-ui/switch"
 import { Card } from "@kilocode/kilo-ui/card"
 import { Button } from "@kilocode/kilo-ui/button"
 import { IconButton } from "@kilocode/kilo-ui/icon-button"
@@ -396,6 +397,12 @@ const AgentBehaviourTab: Component = () => {
     ))
   }
 
+  const updateMcp = (name: string, partial: Record<string, unknown>) => {
+    const existing = config().mcp ?? {}
+    const current = existing[name] ?? {}
+    updateConfig({ mcp: { ...existing, [name]: { ...current, ...partial } } })
+  }
+
   const renderMcpSubtab = () => {
     const mcpEntries = createMemo(() => Object.entries(config().mcp ?? {}))
 
@@ -418,50 +425,77 @@ const AgentBehaviourTab: Component = () => {
         >
           <Card>
             <For each={mcpEntries()}>
-              {([name, mcp], index) => (
-                <div
-                  style={{
-                    display: "flex",
-                    "align-items": "center",
-                    "justify-content": "space-between",
-                    padding: "8px 0",
-                    "border-bottom": index() < mcpEntries().length - 1 ? "1px solid var(--border-weak-base)" : "none",
-                  }}
-                >
-                  <div style={{ flex: 1, "min-width": 0 }}>
-                    <div style={{ "font-weight": "500" }}>{name}</div>
-                    <div
-                      style={{
-                        "font-size": "12px",
-                        color: "var(--text-weak-base, var(--vscode-descriptionForeground))",
-                        "margin-top": "4px",
-                        "font-family": "var(--vscode-editor-font-family, monospace)",
-                      }}
-                    >
-                      <Show when={mcp.command}>
-                        <div>
-                          command:{" "}
-                          {Array.isArray(mcp.command)
-                            ? mcp.command.join(" ")
-                            : `${mcp.command} ${(mcp.args ?? []).join(" ")}`}
-                        </div>
-                      </Show>
-                      <Show when={mcp.url}>
-                        <div>url: {mcp.url}</div>
-                      </Show>
+              {([name, mcp], index) => {
+                const enabled = () => mcp.enabled !== false
+                return (
+                  <div
+                    style={{
+                      display: "flex",
+                      "align-items": "center",
+                      "justify-content": "space-between",
+                      padding: "8px 0",
+                      "border-bottom": index() < mcpEntries().length - 1 ? "1px solid var(--border-weak-base)" : "none",
+                      opacity: enabled() ? "1" : "0.5",
+                    }}
+                  >
+                    <div style={{ flex: 1, "min-width": 0 }}>
+                      <div style={{ display: "flex", "align-items": "center", gap: "8px" }}>
+                        <span
+                          style={{
+                            width: "8px",
+                            height: "8px",
+                            "border-radius": "50%",
+                            background: enabled()
+                              ? "var(--vscode-testing-iconPassed, #4caf50)"
+                              : "var(--vscode-disabledForeground, #888)",
+                            "flex-shrink": "0",
+                          }}
+                          title={
+                            enabled()
+                              ? language.t("settings.agentBehaviour.mcp.enabled")
+                              : language.t("settings.agentBehaviour.mcp.disabled")
+                          }
+                        />
+                        <div style={{ "font-weight": "500" }}>{name}</div>
+                      </div>
+                      <div
+                        style={{
+                          "font-size": "12px",
+                          color: "var(--text-weak-base, var(--vscode-descriptionForeground))",
+                          "margin-top": "4px",
+                          "margin-left": "16px",
+                          "font-family": "var(--vscode-editor-font-family, monospace)",
+                        }}
+                      >
+                        <Show when={mcp.command}>
+                          <div>
+                            {Array.isArray(mcp.command)
+                              ? mcp.command.join(" ")
+                              : `${mcp.command} ${(mcp.args ?? []).join(" ")}`}
+                          </div>
+                        </Show>
+                        <Show when={mcp.url}>
+                          <div>{mcp.url}</div>
+                        </Show>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", "align-items": "center", gap: "8px" }}>
+                      <Switch checked={enabled()} onChange={(val) => updateMcp(name, { enabled: val })} hideLabel>
+                        {language.t("settings.agentBehaviour.mcp.toggle")}
+                      </Switch>
+                      <IconButton
+                        size="small"
+                        variant="ghost"
+                        icon="close"
+                        onClick={(e: MouseEvent) => {
+                          e.stopPropagation()
+                          confirmRemoveMcp(name)
+                        }}
+                      />
                     </div>
                   </div>
-                  <IconButton
-                    size="small"
-                    variant="ghost"
-                    icon="close"
-                    onClick={(e: MouseEvent) => {
-                      e.stopPropagation()
-                      confirmRemoveMcp(name)
-                    }}
-                  />
-                </div>
-              )}
+                )
+              }}
             </For>
           </Card>
         </Show>

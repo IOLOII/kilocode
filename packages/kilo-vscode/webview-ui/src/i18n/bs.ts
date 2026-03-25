@@ -1080,6 +1080,9 @@ export const dict = {
   "settings.agentBehaviour.removeMode.confirm":
     'Ukloniti mod "{{name}}"? Ovo će onemogućiti mod ažuriranjem vaše konfiguracije.',
   "settings.agentBehaviour.removeMode.button": "Ukloni",
+  "settings.agentBehaviour.mcp.enabled": "Omogućeno",
+  "settings.agentBehaviour.mcp.disabled": "Onemogućeno",
+  "settings.agentBehaviour.mcp.toggle": "Omogući/onemogući MCP server",
   "settings.agentBehaviour.removeMcp.title": "Ukloni MCP server",
   "settings.agentBehaviour.removeMcp.confirm":
     'Ukloniti MCP server "{{name}}"? Ovo će ga ukloniti iz vaše konfiguracije.',

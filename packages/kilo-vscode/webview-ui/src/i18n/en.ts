@@ -1065,6 +1065,9 @@ export const dict = {
   "settings.agentBehaviour.instructionFiles": "Additional Instruction Files",
   "settings.agentBehaviour.instructionFiles.description":
     "Paths to additional instruction files that are included in the system prompt",
+  "settings.agentBehaviour.mcp.enabled": "Enabled",
+  "settings.agentBehaviour.mcp.disabled": "Disabled",
+  "settings.agentBehaviour.mcp.toggle": "Enable/disable MCP server",
   "settings.agentBehaviour.removeMcp.title": "Remove MCP server",
   "settings.agentBehaviour.removeMcp.confirm": 'Remove MCP server "{{name}}"? This will remove it from your config.',
   "settings.agentBehaviour.removeMcp.button": "Remove",

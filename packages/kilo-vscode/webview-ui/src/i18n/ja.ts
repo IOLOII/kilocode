@@ -1075,6 +1075,9 @@ export const dict = {
   "settings.agentBehaviour.removeMode.confirm":
     'モード "{{name}}" を削除しますか？設定を更新してモードを無効にします。',
   "settings.agentBehaviour.removeMode.button": "削除",
+  "settings.agentBehaviour.mcp.enabled": "有効",
+  "settings.agentBehaviour.mcp.disabled": "無効",
+  "settings.agentBehaviour.mcp.toggle": "MCPサーバーを有効/無効にする",
   "settings.agentBehaviour.removeMcp.title": "MCPサーバーを削除",
   "settings.agentBehaviour.removeMcp.confirm": 'MCPサーバー "{{name}}" を削除しますか？設定から削除されます。',
   "settings.agentBehaviour.removeMcp.button": "削除",

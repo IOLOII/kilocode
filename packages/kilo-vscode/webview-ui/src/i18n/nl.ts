@@ -1070,6 +1070,9 @@ export const dict = {
   "settings.agentBehaviour.instructionFiles": "Aanvullende Instructiebestanden",
   "settings.agentBehaviour.instructionFiles.description":
     "Paden naar aanvullende instructiebestanden die zijn opgenomen in de systeem prompt",
+  "settings.agentBehaviour.mcp.enabled": "Ingeschakeld",
+  "settings.agentBehaviour.mcp.disabled": "Uitgeschakeld",
+  "settings.agentBehaviour.mcp.toggle": "MCP-server in-/uitschakelen",
   "settings.agentBehaviour.removeMcp.title": "Verwijder MCP-server",
   "settings.agentBehaviour.removeMcp.confirm":
     'MCP-server "{{name}}" verwijderen? Dit zal deze uit je configuratie verwijderen.',

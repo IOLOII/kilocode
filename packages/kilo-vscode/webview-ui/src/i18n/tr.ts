@@ -1069,6 +1069,9 @@ export const dict = {
   "settings.agentBehaviour.instructionFiles": "Ek Talimat Dosyaları",
   "settings.agentBehaviour.instructionFiles.description":
     "Sistem komutuna dahil edilen ek talimat dosyalarının yolları",
+  "settings.agentBehaviour.mcp.enabled": "Etkin",
+  "settings.agentBehaviour.mcp.disabled": "Devre dışı",
+  "settings.agentBehaviour.mcp.toggle": "MCP sunucusunu etkinleştir/devre dışı bırak",
   "settings.agentBehaviour.removeMcp.title": "MCP sunucusunu kaldır",
   "settings.agentBehaviour.removeMcp.confirm":
     '"{{name}}" MCP sunucusu kaldırılsın mı? Bu, yapılandırmanızdan kaldırılacak.',

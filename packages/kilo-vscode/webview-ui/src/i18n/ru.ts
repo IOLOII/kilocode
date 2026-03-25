@@ -1083,6 +1083,9 @@ export const dict = {
   "settings.agentBehaviour.removeMode.confirm":
     'Удалить режим "{{name}}"? Это отключит режим, обновив вашу конфигурацию.',
   "settings.agentBehaviour.removeMode.button": "Удалить",
+  "settings.agentBehaviour.mcp.enabled": "Включено",
+  "settings.agentBehaviour.mcp.disabled": "Отключено",
+  "settings.agentBehaviour.mcp.toggle": "Включить/отключить сервер MCP",
   "settings.agentBehaviour.removeMcp.title": "Удалить сервер MCP",
   "settings.agentBehaviour.removeMcp.confirm": 'Удалить сервер MCP "{{name}}"? Это удалит его из вашей конфигурации.',
   "settings.agentBehaviour.removeMcp.button": "Удалить",
