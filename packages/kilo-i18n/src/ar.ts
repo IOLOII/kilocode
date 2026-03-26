@@ -69,4 +69,7 @@ export const dict = {
   "marketplace.warning.busyMany": "عدة جلسات تعمل وستتوقف",
   "marketplace.warning.installAnyway": "تثبيت على أي حال",
   "marketplace.warning.cancel": "إلغاء",
+
+  "welcome.login.title": "تسجيل الدخول باستخدام Kilo Code",
+  "welcome.login.desc": "أكثر من 500 نموذج، سجل سحابي وحسابات فِرق",
 }

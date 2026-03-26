@@ -69,4 +69,7 @@ export const dict = {
   "marketplace.warning.busyMany": "มีหลายเซสชันกำลังทำงานและจะถูกขัดจังหวะ",
   "marketplace.warning.installAnyway": "ติดตั้งต่อไป",
   "marketplace.warning.cancel": "ยกเลิก",
+
+  "welcome.login.title": "เข้าสู่ระบบด้วย Kilo Code",
+  "welcome.login.desc": "โมเดลมากกว่า 500 แบบ, ประวัติบนคลาวด์ และบัญชีทีม",
 }

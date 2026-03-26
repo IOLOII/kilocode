@@ -69,4 +69,7 @@ export const dict = {
   "marketplace.warning.busyMany": "Birden fazla oturum çalışıyor ve kesintiye uğrayacak",
   "marketplace.warning.installAnyway": "Yine de yükle",
   "marketplace.warning.cancel": "İptal",
+
+  "welcome.login.title": "Kilo Code ile Giriş Yap",
+  "welcome.login.desc": "500+ model, bulut geçmişi ve ekip hesapları",
 }

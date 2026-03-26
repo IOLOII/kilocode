@@ -15,6 +15,7 @@ import { createAutoScroll } from "@kilocode/kilo-ui/hooks"
 import { useSession } from "../../context/session"
 import { useServer } from "../../context/server"
 import { useLanguage } from "../../context/language"
+import { useVSCode } from "../../context/vscode"
 import { formatRelativeDate } from "../../utils/date"
 import { FeedbackDialog } from "./FeedbackDialog"
 import { VscodeSessionTurn } from "./VscodeSessionTurn"
@@ -47,6 +48,7 @@ export const MessageList: Component<MessageListProps> = (props) => {
   const server = useServer()
   const language = useLanguage()
   const dialog = useDialog()
+  const vscode = useVSCode()
 
   const autoScroll = createAutoScroll({
     working: () => session.status() !== "idle",
@@ -93,6 +95,16 @@ export const MessageList: Component<MessageListProps> = (props) => {
       <Show when={isEmpty()}>
         <div class="welcome-header">
           <AccountSwitcher class="account-switcher-welcome" />
+          <Show when={!server.profileData()}>
+            <button
+              type="button"
+              class="kilo-login-banner"
+              onClick={() => vscode.postMessage({ type: "openProfilePanel" })}
+            >
+              <span class="kilo-login-banner-title">{language.t("welcome.login.title")}</span>
+              <span class="kilo-login-banner-desc">{language.t("welcome.login.desc")}</span>
+            </button>
+          </Show>
           <KiloNotifications />
         </div>
       </Show>

@@ -69,4 +69,7 @@ export const dict = {
   "marketplace.warning.busyMany": "Несколько сеансов выполняются и будут прерваны",
   "marketplace.warning.installAnyway": "Установить в любом случае",
   "marketplace.warning.cancel": "Отмена",
+
+  "welcome.login.title": "Войти с Kilo Code",
+  "welcome.login.desc": "Более 500 моделей, облачная история и командные аккаунты",
 }

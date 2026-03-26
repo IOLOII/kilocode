@@ -71,4 +71,7 @@ export const dict = {
   "marketplace.warning.busyMany": "Er zijn meerdere sessies actief en deze zullen worden onderbroken",
   "marketplace.warning.installAnyway": "Toch installeren",
   "marketplace.warning.cancel": "Annuleren",
+
+  "welcome.login.title": "Inloggen met Kilo Code",
+  "welcome.login.desc": "500+ modellen, cloudgeschiedenis & teamaccounts",
 }

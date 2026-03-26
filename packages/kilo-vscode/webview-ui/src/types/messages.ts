@@ -1442,6 +1442,10 @@ export interface OpenSettingsPanelRequest {
   tab?: string
 }
 
+export interface OpenProfilePanelRequest {
+  type: "openProfilePanel"
+}
+
 export interface RequestAgentsMessage {
   type: "requestAgents"
 }
@@ -1945,6 +1949,7 @@ export type WebviewMessage =
   | RefreshProfileRequest
   | OpenExternalRequest
   | OpenSettingsPanelRequest
+  | OpenProfilePanelRequest
   | OpenFileRequest
   | CancelLoginRequest
   | SetOrganizationRequest

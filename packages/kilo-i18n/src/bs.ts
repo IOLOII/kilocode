@@ -74,4 +74,7 @@ export const dict = {
   "marketplace.warning.busyMany": "Nekoliko sesija je pokrenuto i bit će prekinuto",
   "marketplace.warning.installAnyway": "Instaliraj svejedno",
   "marketplace.warning.cancel": "Otkaži",
+
+  "welcome.login.title": "Prijavite se sa Kilo Code",
+  "welcome.login.desc": "500+ modela, historija u oblaku i timski nalozi",
 }

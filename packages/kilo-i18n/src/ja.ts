@@ -67,4 +67,7 @@ export const dict = {
   "marketplace.warning.busyMany": "複数のセッションが実行中で中断されます",
   "marketplace.warning.installAnyway": "それでもインストール",
   "marketplace.warning.cancel": "キャンセル",
+
+  "welcome.login.title": "Kilo Code でログイン",
+  "welcome.login.desc": "500以上のモデル、クラウド履歴、チームアカウント",
 }

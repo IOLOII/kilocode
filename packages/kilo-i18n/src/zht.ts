@@ -66,4 +66,7 @@ export const dict = {
   "marketplace.warning.busyMany": "多個工作階段正在執行，將被中斷",
   "marketplace.warning.installAnyway": "仍然安裝",
   "marketplace.warning.cancel": "取消",
+
+  "welcome.login.title": "使用 Kilo Code 登入",
+  "welcome.login.desc": "500+ 個模型、雲端歷史紀錄與團隊帳號",
 }

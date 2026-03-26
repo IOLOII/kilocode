@@ -14,6 +14,10 @@ export const dict = {
   "dialog.provider.group.recommended": "Recommended",
   "dialog.provider.kilo.note": "Access 500+ AI models",
 
+  // Welcome screen login banner
+  "welcome.login.title": "Login with Kilo Code",
+  "welcome.login.desc": "500+ models, cloud history & team accounts",
+
   // Reasoning block label
   "ui.permission.run": "Run",
   "ui.reasoning.label": "Reasoning",

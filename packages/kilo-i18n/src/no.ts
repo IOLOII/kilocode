@@ -69,4 +69,7 @@ export const dict = {
   "marketplace.warning.busyMany": "Flere økter kjører og vil bli avbrutt",
   "marketplace.warning.installAnyway": "Installer uansett",
   "marketplace.warning.cancel": "Avbryt",
+
+  "welcome.login.title": "Logg inn med Kilo Code",
+  "welcome.login.desc": "500+ modeller, skyhistorikk og teamkontoer",
 }

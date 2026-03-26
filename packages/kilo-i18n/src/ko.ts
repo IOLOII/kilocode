@@ -67,4 +67,7 @@ export const dict = {
   "marketplace.warning.busyMany": "여러 세션이 실행 중이며 중단됩니다",
   "marketplace.warning.installAnyway": "그래도 설치",
   "marketplace.warning.cancel": "취소",
+
+  "welcome.login.title": "Kilo Code로 로그인",
+  "welcome.login.desc": "500개 이상의 모델, 클라우드 기록 및 팀 계정",
 }
