@@ -73,6 +73,9 @@ export namespace Snapshot {
       await $`git --git-dir ${git} config core.fsmonitor false`.quiet().nothrow()
       log.info("initialized")
     }
+    // kilocode_change start
+    await syncAlternates(git)
+    // kilocode_change end
     await add(git)
     const hash = await $`git --git-dir ${git} --work-tree ${Instance.worktree} write-tree`
       .quiet()
@@ -90,7 +93,7 @@ export namespace Snapshot {
   export type Patch = z.infer<typeof Patch>
 
   export async function patch(hash: string): Promise<Patch> {
-    const git = gitdir()
+    const git = await gitFor(hash) // kilocode_change
     await add(git)
     const result =
       await $`git -c core.autocrlf=false -c core.longpaths=true -c core.symlinks=true -c core.quotepath=false --git-dir ${git} --work-tree ${Instance.worktree} diff --no-ext-diff --name-only ${hash} -- .`
@@ -118,7 +121,7 @@ export namespace Snapshot {
 
   export async function restore(snapshot: string) {
     log.info("restore", { commit: snapshot })
-    const git = gitdir()
+    const git = await gitFor(snapshot) // kilocode_change
     const result =
       await $`git -c core.longpaths=true -c core.symlinks=true --git-dir ${git} --work-tree ${Instance.worktree} read-tree ${snapshot} && git -c core.longpaths=true -c core.symlinks=true --git-dir ${git} --work-tree ${Instance.worktree} checkout-index -a -f`
         .quiet()
@@ -137,8 +140,8 @@ export namespace Snapshot {
 
   export async function revert(patches: Patch[]) {
     const files = new Set<string>()
-    const git = gitdir()
     for (const item of patches) {
+      const git = await gitFor(item.hash) // kilocode_change
       for (const file of item.files) {
         if (files.has(file)) continue
         log.info("reverting", { file, hash: item.hash })
@@ -169,7 +172,7 @@ export namespace Snapshot {
   }
 
   export async function diff(hash: string) {
-    const git = gitdir()
+    const git = await gitFor(hash) // kilocode_change
     await add(git)
     const result =
       await $`git -c core.autocrlf=false -c core.longpaths=true -c core.symlinks=true -c core.quotepath=false --git-dir ${git} --work-tree ${Instance.worktree} diff --no-ext-diff ${hash} -- .`
@@ -204,7 +207,7 @@ export namespace Snapshot {
     })
   export type FileDiff = z.infer<typeof FileDiff>
   export async function diffFull(from: string, to: string): Promise<FileDiff[]> {
-    const git = gitdir()
+    const git = await gitFor(from, to) // kilocode_change
     const result: FileDiff[] = []
     const status = new Map<string, "added" | "deleted" | "modified">()
 
@@ -265,6 +268,13 @@ export namespace Snapshot {
     // kilocode_change end
   }
 
+  // kilocode_change start
+  function legacygitdir() {
+    const project = Instance.project
+    return path.join(Global.Path.data, "snapshot", project.id)
+  }
+  // kilocode_change end
+
   async function add(git: string) {
     await syncExclude(git)
     await $`git -c core.autocrlf=false -c core.longpaths=true -c core.symlinks=true --git-dir ${git} --work-tree ${Instance.worktree} add .`
@@ -285,6 +295,41 @@ export namespace Snapshot {
 
     await Filesystem.write(target, text)
   }
+
+  // kilocode_change start
+  async function syncAlternates(git: string) {
+    const legacy = legacygitdir()
+    if (legacy === git) return
+    const objects = path.join(legacy, "objects")
+    const exists = await fs
+      .stat(objects)
+      .then(() => true)
+      .catch(() => false)
+    const target = path.join(git, "objects", "info", "alternates")
+    await fs.mkdir(path.join(git, "objects", "info"), { recursive: true })
+    await Filesystem.write(target, exists ? objects + "\n" : "")
+  }
+
+  async function gitFor(...hashes: string[]) {
+    const dirs = [gitdir(), legacygitdir()].filter((item, i, all) => all.indexOf(item) === i)
+    for (const git of dirs) {
+      const exists = await fs
+        .stat(git)
+        .then(() => true)
+        .catch(() => false)
+      if (!exists) continue
+      if (git === gitdir()) await syncAlternates(git)
+      const checks = await Promise.all(hashes.map((hash) => hasTree(git, hash)))
+      if (checks.every(Boolean)) return git
+    }
+    return gitdir()
+  }
+
+  async function hasTree(git: string, hash: string) {
+    const result = await $`git --git-dir ${git} cat-file -e ${hash}^{tree}`.quiet().nothrow()
+    return result.exitCode === 0
+  }
+  // kilocode_change end
 
   async function excludes() {
     const file = await $`git rev-parse --path-format=absolute --git-path info/exclude`
