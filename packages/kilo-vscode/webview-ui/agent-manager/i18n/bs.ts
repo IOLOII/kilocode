@@ -26,6 +26,7 @@ export const dict = {
   "agentManager.hoverCard.changes": "Promjene",
   "agentManager.hoverCard.commits": "Commiti",
   "agentManager.session.new": "Nova sesija",
+  "agentManager.session.reopen": "Ponovo otvori zatvorenu sesiju",
   "agentManager.session.untitled": "Bez naslova",
   "agentManager.session.newSession": "Nova sesija",
   "agentManager.session.openInWorktree": "Otvori u Worktree-u",

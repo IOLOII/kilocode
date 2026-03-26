@@ -784,6 +784,8 @@ export interface ManagedSessionState {
   id: string
   worktreeId: string | null
   createdAt: string
+  /** When true the session tab is hidden but the association is preserved. */
+  closed?: boolean
 }
 
 // Agent Manager session added to an existing worktree (no setup overlay needed)
@@ -1635,6 +1637,12 @@ export interface CloseSessionRequest {
   sessionId: string
 }
 
+// Reopen a previously closed session tab
+export interface ReopenSessionRequest {
+  type: "agentManager.reopenSession"
+  sessionId: string
+}
+
 // Rename a worktree's display label
 export interface RenameWorktreeRequest {
   type: "agentManager.renameWorktree"
@@ -1950,6 +1958,7 @@ export type WebviewMessage =
   | AddSessionToWorktreeRequest
   | ForkSessionRequest
   | CloseSessionRequest
+  | ReopenSessionRequest
   | RenameWorktreeRequest
   | TelemetryRequest
   | RequestRepoInfoMessage

@@ -239,6 +239,11 @@ interface CloseSessionIn {
   sessionId: string
 }
 
+interface ReopenSessionIn {
+  type: "agentManager.reopenSession"
+  sessionId: string
+}
+
 interface ConfigureSetupScriptIn {
   type: "agentManager.configureSetupScript"
 }
@@ -419,6 +424,7 @@ export type AgentManagerInMessage =
   | PromoteSessionIn
   | AddSessionToWorktreeIn
   | CloseSessionIn
+  | ReopenSessionIn
   | ForkSessionIn
   | ConfigureSetupScriptIn
   | ShowTerminalIn

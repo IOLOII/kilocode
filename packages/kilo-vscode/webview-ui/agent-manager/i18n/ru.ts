@@ -26,6 +26,7 @@ export const dict = {
   "agentManager.hoverCard.changes": "Изменения",
   "agentManager.hoverCard.commits": "Коммиты",
   "agentManager.session.new": "Новая сессия",
+  "agentManager.session.reopen": "Открыть закрытую сессию",
   "agentManager.session.untitled": "Без названия",
   "agentManager.session.newSession": "Новая сессия",
   "agentManager.session.openInWorktree": "Открыть в Worktree",

@@ -195,6 +195,7 @@ export class AgentManagerProvider implements Disposable {
     if (m.type === "agentManager.addSessionToWorktree") return this.onAddSessionToWorktree(m.worktreeId)
     if (m.type === "agentManager.forkSession") return this.onForkSession(m.sessionId, m.worktreeId)
     if (m.type === "agentManager.closeSession") return this.onCloseSession(m.sessionId)
+    if (m.type === "agentManager.reopenSession") return this.onReopenSession(m.sessionId)
     if (m.type === "agentManager.configureSetupScript") {
       void this.configureSetupScript()
       return null
@@ -779,14 +780,33 @@ export class AgentManagerProvider implements Disposable {
     )
   }
 
-  /** Close (remove) a session from its worktree. */
+  /** Close (hide) a session tab without deleting the worktree association. */
   private async onCloseSession(sessionId: string): Promise<null> {
     const state = this.getStateManager()
     if (!state) return null
 
-    state.removeSession(sessionId)
+    state.closeSession(sessionId)
     this.pushState()
     this.log(`Closed session ${sessionId}`)
+    return null
+  }
+
+  /** Reopen a previously closed session tab. */
+  private async onReopenSession(sessionId: string): Promise<null> {
+    const state = this.getStateManager()
+    if (!state) return null
+
+    state.reopenSession(sessionId)
+    this.pushState()
+
+    // Ensure the session is tracked and its directory is registered
+    const dir = state.directoryFor(sessionId)
+    if (dir) {
+      this.panel?.sessions.setSessionDirectory(sessionId, dir)
+      this.panel?.sessions.trackSession(sessionId)
+    }
+
+    this.log(`Reopened session ${sessionId}`)
     return null
   }
 

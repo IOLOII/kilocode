@@ -41,6 +41,8 @@ export interface ManagedSession {
   id: string
   worktreeId: string | null
   createdAt: string
+  /** When true the session tab is hidden but the association is preserved. */
+  closed?: boolean
 }
 
 interface StateFile {
@@ -210,6 +212,32 @@ export class WorktreeStateManager {
     if (!session) return
     session.worktreeId = worktreeId
     this.log(`Moved session ${sessionId} to worktree ${worktreeId}`)
+    void this.save()
+  }
+
+  /** Mark a session as closed (hidden from tabs) without deleting the association. */
+  closeSession(id: string): void {
+    const session = this.sessions.get(id)
+    if (!session) return
+    session.closed = true
+
+    // Remove this session from any tab order arrays
+    for (const [key, order] of Object.entries(this.tabOrder)) {
+      const idx = order.indexOf(id)
+      if (idx !== -1) {
+        order.splice(idx, 1)
+        if (order.length === 0) delete this.tabOrder[key]
+      }
+    }
+
+    void this.save()
+  }
+
+  /** Reopen a previously closed session. */
+  reopenSession(id: string): void {
+    const session = this.sessions.get(id)
+    if (!session) return
+    delete session.closed
     void this.save()
   }
 

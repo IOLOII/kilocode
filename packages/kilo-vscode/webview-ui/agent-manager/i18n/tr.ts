@@ -29,6 +29,7 @@ export const dict = {
   "agentManager.hoverCard.commits": "Commit'ler",
 
   "agentManager.session.new": "Yeni oturum",
+  "agentManager.session.reopen": "Kapatılmış oturumu yeniden aç",
   "agentManager.session.untitled": "Adsız",
   "agentManager.session.newSession": "Yeni Oturum",
   "agentManager.session.openInWorktree": "Worktree içinde aç",

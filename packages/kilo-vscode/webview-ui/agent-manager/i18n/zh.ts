@@ -26,6 +26,7 @@ export const dict = {
   "agentManager.hoverCard.changes": "更改",
   "agentManager.hoverCard.commits": "提交",
   "agentManager.session.new": "新建会话",
+  "agentManager.session.reopen": "重新打开已关闭的会话",
   "agentManager.session.untitled": "无标题",
   "agentManager.session.newSession": "新建会话",
   "agentManager.session.openInWorktree": "在 Worktree 中打开",

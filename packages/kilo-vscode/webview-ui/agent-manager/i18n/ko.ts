@@ -26,6 +26,7 @@ export const dict = {
   "agentManager.hoverCard.changes": "변경 사항",
   "agentManager.hoverCard.commits": "커밋",
   "agentManager.session.new": "새 세션",
+  "agentManager.session.reopen": "닫힌 세션 다시 열기",
   "agentManager.session.untitled": "제목 없음",
   "agentManager.session.newSession": "새 세션",
   "agentManager.session.openInWorktree": "Worktree에서 열기",

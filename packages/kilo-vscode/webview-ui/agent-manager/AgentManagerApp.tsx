@@ -720,13 +720,25 @@ const AgentManagerContent: Component = () => {
   const activeWorktreeSessions = createMemo((): SessionInfo[] => {
     const sel = selection()
     if (!sel || sel === LOCAL) return []
-    const managed = managedSessions().filter((ms) => ms.worktreeId === sel)
+    const managed = managedSessions().filter((ms) => ms.worktreeId === sel && !ms.closed)
     const ids = new Set(managed.map((ms) => ms.id))
     const sessions = session
       .sessions()
       .filter((s) => ids.has(s.id))
       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
     return applyTabOrder(sessions, worktreeTabOrder()[sel])
+  })
+
+  // Closed sessions for the currently selected worktree (available for reopening)
+  const closedWorktreeSessions = createMemo((): SessionInfo[] => {
+    const sel = selection()
+    if (!sel || sel === LOCAL) return []
+    const managed = managedSessions().filter((ms) => ms.worktreeId === sel && ms.closed)
+    const ids = new Set(managed.map((ms) => ms.id))
+    return session
+      .sessions()
+      .filter((s) => ids.has(s.id))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
   })
 
   // Active tab sessions: local sessions when on "local", worktree sessions otherwise
@@ -1798,6 +1810,11 @@ const AgentManagerContent: Component = () => {
     }
   }
 
+  const handleReopenSession = (sessionId: string) => {
+    vscode.postMessage({ type: "agentManager.reopenSession", sessionId })
+    session.selectSession(sessionId)
+  }
+
   const handleForkSession = (sessionId: string) => {
     const sel = selection()
     if (sel === LOCAL) {
@@ -2543,6 +2560,26 @@ const AgentManagerContent: Component = () => {
                   onClick={handleAddSession}
                 />
               </TooltipKeybind>
+              <Show when={closedWorktreeSessions().length > 0}>
+                <DropdownMenu gutter={4} placement="bottom-start">
+                  <Tooltip value={t("agentManager.session.reopen")} placement="bottom">
+                    <DropdownMenu.Trigger class="am-tab-add" aria-label={t("agentManager.session.reopen")}>
+                      <Icon name="history" size="small" />
+                    </DropdownMenu.Trigger>
+                  </Tooltip>
+                  <DropdownMenu.Portal>
+                    <DropdownMenu.Content class="am-split-menu">
+                      <For each={closedWorktreeSessions()}>
+                        {(s) => (
+                          <DropdownMenu.Item onSelect={() => handleReopenSession(s.id)}>
+                            <DropdownMenu.ItemLabel>{s.title || s.id.slice(0, 8)}</DropdownMenu.ItemLabel>
+                          </DropdownMenu.Item>
+                        )}
+                      </For>
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Portal>
+                </DropdownMenu>
+              </Show>
               <div class="am-tab-actions">
                 {(() => {
                   const sel = () => selection()
