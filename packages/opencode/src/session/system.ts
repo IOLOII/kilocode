@@ -11,6 +11,9 @@ import PROMPT_GEMINI from "./prompt/gemini.txt"
 import PROMPT_CODEX from "./prompt/codex_header.txt"
 import PROMPT_TRINITY from "./prompt/trinity.txt"
 import type { Provider } from "@/provider/provider"
+import type { Agent } from "@/agent/agent"
+import { PermissionNext } from "@/permission/next"
+import { Skill } from "@/skill"
 
 // kilocode_change start
 import SOUL from "../kilocode/soul.txt"
@@ -82,7 +85,25 @@ export namespace SystemPrompt {
             : ""
         }`,
         `</directories>`,
+        // kilocode_change start — tell the model about the <environment_details> block injected into user messages
+        ``,
+        `At the end of each user message, you may receive <environment_details> with information about the user's currently active file, visible editors, and open tabs. This is auto-generated context — use it to understand which files the user is working with.`,
+        // kilocode_change end
       ].join("\n"),
     ]
+  }
+
+  export async function skills(agent: Agent.Info) {
+    if (PermissionNext.disabled(["skill"], agent.permission).has("skill")) return
+
+    const list = await Skill.available(agent)
+
+    return [
+      "Skills provide specialized instructions and workflows for specific tasks.",
+      "Use the skill tool to load a skill when a task matches its description.",
+      // the agents seem to ingest the information about skills a bit better if we present a more verbose
+      // version of them here and a less verbose version in tool description, rather than vice versa.
+      Skill.fmt(list, { verbose: true }),
+    ].join("\n")
   }
 }

@@ -726,8 +726,10 @@ export namespace SessionPrompt {
       // kilocode_change end
 
       // Build system prompt, adding structured output instruction if needed
+      const skills = await SystemPrompt.skills(agent)
       const system = [
         ...(await SystemPrompt.environment(model, lastUser.editorContext)),
+        ...(skills ? [skills] : []),
         ...(await InstructionPrompt.system()),
       ] // kilocode_change
       const format = lastUser.format ?? { type: "text" }
