@@ -1509,9 +1509,11 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     if (!this.client) return
 
     try {
-      const { data } = await this.client.session.systemPrompt({ sessionID }, { throwOnError: true })
+      const dir = this.getWorkspaceDirectory(sessionID)
+      const { data } = await this.client.session.systemPrompt({ sessionID, directory: dir }, { throwOnError: true })
       this.postMessage({
         type: "systemPromptLoaded",
+        sessionID,
         system: data.system,
         sources: data.sources,
       })

@@ -320,6 +320,10 @@ export const dict = {
   "context.breakdown.other": "อื่น ๆ",
 
   "context.systemPrompt.title": "พร้อมท์ระบบ",
+  "context.systemPrompt.expandAll": "ขยายทั้งหมด",
+  "context.systemPrompt.collapseAll": "ยุบทั้งหมด",
+  "context.systemPrompt.copy": "คัดลอกพรอมต์ทั้งหมด",
+  "context.systemPrompt.copied": "คัดลอกแล้ว",
   "context.rawMessages.title": "ข้อความดิบ",
 
   "context.stats.session": "เซสชัน",

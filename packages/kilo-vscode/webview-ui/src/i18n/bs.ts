@@ -322,6 +322,10 @@ export const dict = {
   "context.breakdown.other": "Ostalo",
 
   "context.systemPrompt.title": "Sistemski prompt",
+  "context.systemPrompt.expandAll": "Proširi sve",
+  "context.systemPrompt.collapseAll": "Skupi sve",
+  "context.systemPrompt.copy": "Kopiraj cijeli prompt",
+  "context.systemPrompt.copied": "Kopirano",
   "context.rawMessages.title": "Sirove poruke",
 
   "context.stats.session": "Sesija",

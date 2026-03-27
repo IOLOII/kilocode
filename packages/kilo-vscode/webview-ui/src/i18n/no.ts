@@ -323,6 +323,10 @@ export const dict = {
   "context.breakdown.other": "Annet",
 
   "context.systemPrompt.title": "Systemprompt",
+  "context.systemPrompt.expandAll": "Utvid alle",
+  "context.systemPrompt.collapseAll": "Skjul alle",
+  "context.systemPrompt.copy": "Kopier hele prompten",
+  "context.systemPrompt.copied": "Kopiert",
   "context.rawMessages.title": "Rå meldinger",
 
   "context.stats.session": "Sesjon",

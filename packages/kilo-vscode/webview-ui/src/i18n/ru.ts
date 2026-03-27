@@ -322,6 +322,10 @@ export const dict = {
   "context.breakdown.other": "Другое",
 
   "context.systemPrompt.title": "Системный промпт",
+  "context.systemPrompt.expandAll": "Развернуть все",
+  "context.systemPrompt.collapseAll": "Свернуть все",
+  "context.systemPrompt.copy": "Копировать весь промпт",
+  "context.systemPrompt.copied": "Скопировано",
   "context.rawMessages.title": "Исходные сообщения",
 
   "context.stats.session": "Сессия",

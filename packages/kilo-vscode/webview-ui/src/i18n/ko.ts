@@ -323,6 +323,10 @@ export const dict = {
   "context.breakdown.other": "기타",
 
   "context.systemPrompt.title": "시스템 프롬프트",
+  "context.systemPrompt.expandAll": "모두 펼치기",
+  "context.systemPrompt.collapseAll": "모두 접기",
+  "context.systemPrompt.copy": "전체 프롬프트 복사",
+  "context.systemPrompt.copied": "복사됨",
   "context.rawMessages.title": "원시 메시지",
 
   "context.stats.session": "세션",

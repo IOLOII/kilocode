@@ -320,6 +320,10 @@ export const dict = {
   "context.breakdown.other": "Diğer",
 
   "context.systemPrompt.title": "Sistem Komutu",
+  "context.systemPrompt.expandAll": "Tümünü genişlet",
+  "context.systemPrompt.collapseAll": "Tümünü daralt",
+  "context.systemPrompt.copy": "Tüm istemi kopyala",
+  "context.systemPrompt.copied": "Kopyalandı",
   "context.rawMessages.title": "Ham mesajlar",
 
   "context.stats.session": "Oturum",

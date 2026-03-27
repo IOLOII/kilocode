@@ -319,6 +319,10 @@ export const dict = {
   "context.breakdown.other": "其他",
 
   "context.systemPrompt.title": "系统提示词",
+  "context.systemPrompt.expandAll": "全部展开",
+  "context.systemPrompt.collapseAll": "全部折叠",
+  "context.systemPrompt.copy": "复制完整提示词",
+  "context.systemPrompt.copied": "已复制",
   "context.rawMessages.title": "原始消息",
 
   "context.stats.session": "会话",

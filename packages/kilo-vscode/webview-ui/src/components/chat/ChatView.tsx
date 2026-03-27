@@ -10,6 +10,7 @@ import { Spinner } from "@kilocode/kilo-ui/spinner"
 import { Tooltip } from "@kilocode/kilo-ui/tooltip"
 import { showToast } from "@kilocode/kilo-ui/toast"
 import { TaskHeader } from "./TaskHeader"
+import { SystemPromptView } from "./SystemPromptView"
 import { MessageList } from "./MessageList"
 import { PromptInput } from "./PromptInput"
 import { QuestionDock } from "./QuestionDock"
@@ -43,6 +44,9 @@ export const ChatView: Component<ChatViewProps> = (props) => {
   const id = () => session.currentSessionID()
   const hasMessages = () => session.messages().length > 0
   const idle = () => session.status() !== "busy"
+
+  // System prompt panel state (owned here so overlay renders inside messages area)
+  const [promptOpen, setPromptOpen] = createSignal(false)
 
   // "Continue in Worktree" state
   const [transferring, setTransferring] = createSignal(false)
@@ -124,8 +128,11 @@ export const ChatView: Component<ChatViewProps> = (props) => {
 
   return (
     <div class="chat-view">
-      <TaskHeader readonly={props.readonly} />
+      <TaskHeader readonly={props.readonly} promptOpen={promptOpen} setPromptOpen={setPromptOpen} />
       <div class="chat-messages-wrapper">
+        <Show when={promptOpen()}>
+          <SystemPromptView onClose={() => setPromptOpen(false)} />
+        </Show>
         <div class="chat-messages">
           <MessageList onSelectSession={props.onSelectSession} onShowHistory={props.onShowHistory} />
         </div>

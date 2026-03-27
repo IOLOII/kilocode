@@ -319,6 +319,10 @@ export const dict = {
   "context.breakdown.other": "Outros",
 
   "context.systemPrompt.title": "Prompt do Sistema",
+  "context.systemPrompt.expandAll": "Expandir tudo",
+  "context.systemPrompt.collapseAll": "Recolher tudo",
+  "context.systemPrompt.copy": "Copiar prompt completo",
+  "context.systemPrompt.copied": "Copiado",
   "context.rawMessages.title": "Mensagens brutas",
 
   "context.stats.session": "Sessão",

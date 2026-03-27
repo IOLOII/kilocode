@@ -8,10 +8,13 @@
    ============================================ */
 
 [data-component="system-prompt-view"] {
-  border-bottom: 1px solid var(--border-weak-base);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
   background-color: var(--background-base);
-  flex-shrink: 0;
-  max-height: 60vh;
   overflow-y: auto;
 
   [data-slot="system-prompt-header"] {
@@ -35,6 +38,10 @@
   [data-slot="system-prompt-actions"] {
     display: flex;
     gap: 2px;
+
+    [data-copied] {
+      color: var(--text-success, var(--vscode-testing-iconPassed, #5cb85c));
+    }
   }
 
   [data-slot="system-prompt-loading"] {

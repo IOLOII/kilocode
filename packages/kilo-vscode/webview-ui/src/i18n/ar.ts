@@ -319,6 +319,10 @@ export const dict = {
   "context.breakdown.other": "أخرى",
 
   "context.systemPrompt.title": "موجه النظام",
+  "context.systemPrompt.expandAll": "توسيع الكل",
+  "context.systemPrompt.collapseAll": "طي الكل",
+  "context.systemPrompt.copy": "نسخ الموجه بالكامل",
+  "context.systemPrompt.copied": "تم النسخ",
   "context.rawMessages.title": "الرسائل الخام",
 
   "context.stats.session": "جلسة",

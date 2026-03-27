@@ -12,11 +12,13 @@ import { Icon } from "@kilocode/kilo-ui/icon"
 import { Checkbox } from "@kilocode/kilo-ui/checkbox"
 import { useSession } from "../../context/session"
 import { useLanguage } from "../../context/language"
-import { SystemPromptView } from "./SystemPromptView"
 import type { TodoItem } from "../../types/messages"
+import type { Accessor, Setter } from "solid-js"
 
 interface TaskHeaderProps {
   readonly?: boolean
+  promptOpen?: Accessor<boolean>
+  setPromptOpen?: Setter<boolean>
 }
 
 export const TaskHeader: Component<TaskHeaderProps> = (props) => {
@@ -60,7 +62,6 @@ export const TaskHeader: Component<TaskHeaderProps> = (props) => {
   })
 
   const [todosOpen, setTodosOpen] = createSignal(false)
-  const [promptOpen, setPromptOpen] = createSignal(false)
 
   return (
     <Show when={hasMessages()}>
@@ -86,17 +87,19 @@ export const TaskHeader: Component<TaskHeaderProps> = (props) => {
               </Tooltip>
             )}
           </Show>
-          <Show when={!props.readonly}>
+          <Show when={!props.readonly && props.setPromptOpen}>
             <Tooltip value={language.t("context.systemPrompt.title")} placement="bottom">
               <IconButton
                 icon="glasses"
                 size="small"
                 variant="ghost"
                 disabled={!hasMessages()}
-                onClick={() => setPromptOpen((v) => !v)}
+                onClick={() => props.setPromptOpen?.((v) => !v)}
                 aria-label={language.t("context.systemPrompt.title")}
               />
             </Tooltip>
+          </Show>
+          <Show when={!props.readonly}>
             <Tooltip value={language.t("command.session.compact")} placement="bottom">
               <IconButton
                 icon="compress"
@@ -110,9 +113,6 @@ export const TaskHeader: Component<TaskHeaderProps> = (props) => {
           </Show>
         </div>
       </div>
-      <Show when={promptOpen()}>
-        <SystemPromptView onClose={() => setPromptOpen(false)} />
-      </Show>
       <Show when={hasTodos()}>
         <div data-component="task-header-todos">
           <button

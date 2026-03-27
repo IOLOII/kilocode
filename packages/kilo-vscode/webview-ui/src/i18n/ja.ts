@@ -320,6 +320,10 @@ export const dict = {
   "context.breakdown.other": "その他",
 
   "context.systemPrompt.title": "システムプロンプト",
+  "context.systemPrompt.expandAll": "すべて展開",
+  "context.systemPrompt.collapseAll": "すべて折りたたむ",
+  "context.systemPrompt.copy": "プロンプト全体をコピー",
+  "context.systemPrompt.copied": "コピーしました",
   "context.rawMessages.title": "生のメッセージ",
 
   "context.stats.session": "セッション",

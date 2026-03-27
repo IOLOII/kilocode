@@ -321,6 +321,10 @@ export const dict = {
   "context.breakdown.other": "Inne",
 
   "context.systemPrompt.title": "Prompt systemowy",
+  "context.systemPrompt.expandAll": "Rozwiń wszystko",
+  "context.systemPrompt.collapseAll": "Zwiń wszystko",
+  "context.systemPrompt.copy": "Skopiuj cały prompt",
+  "context.systemPrompt.copied": "Skopiowano",
   "context.rawMessages.title": "Surowe wiadomości",
 
   "context.stats.session": "Sesja",

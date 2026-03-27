@@ -1952,6 +1952,7 @@ export interface SystemPromptSource {
 
 export interface SystemPromptLoadedMessage {
   type: "systemPromptLoaded"
+  sessionID: string
   system: string[]
   sources: SystemPromptSource[]
 }
