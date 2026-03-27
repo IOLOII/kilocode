@@ -216,7 +216,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
 
   // Compact/summarize the current session (mirrors canCompact guards in TaskHeader)
   const onCompact = () => {
-    if (session.status() === "busy") return
+    if (session.status() !== "idle") return
     if (session.messages().length === 0) return
     if (!session.selected()) return
     session.compact()
@@ -224,7 +224,7 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
   window.addEventListener("compactSession", onCompact)
   onCleanup(() => window.removeEventListener("compactSession", onCompact))
 
-  const isBusy = () => session.status() === "busy"
+  const isBusy = () => session.status() === "busy" || session.status() === "retry"
   const isDisabled = () => !server.isConnected()
   const hasInput = () => text().trim().length > 0 || imageAttach.images().length > 0 || reviewComments().length > 0
   const canSend = () => hasInput() && !isDisabled() && !props.blocked?.()

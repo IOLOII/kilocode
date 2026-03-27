@@ -402,6 +402,9 @@ export namespace SessionProcessor {
                   next: Date.now() + delay,
                 })
                 await SessionRetry.sleep(delay, input.abort).catch(() => {})
+                // kilocode_change start - break out of retry loop when aborted (e.g. stop button or model change)
+                if (input.abort.aborted) break
+                // kilocode_change end
                 continue
               }
               input.assistantMessage.error = error

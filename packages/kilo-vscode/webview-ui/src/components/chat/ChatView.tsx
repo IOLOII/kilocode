@@ -42,7 +42,7 @@ export const ChatView: Component<ChatViewProps> = (props) => {
 
   const id = () => session.currentSessionID()
   const hasMessages = () => session.messages().length > 0
-  const idle = () => session.status() !== "busy"
+  const idle = () => session.status() === "idle"
 
   // "Continue in Worktree" state
   const [transferring, setTransferring] = createSignal(false)
@@ -79,7 +79,7 @@ export const ChatView: Component<ChatViewProps> = (props) => {
   onMount(() => {
     if (props.readonly) return
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && session.status() === "busy" && !e.defaultPrevented) {
+      if (e.key === "Escape" && session.status() !== "idle" && !e.defaultPrevented) {
         e.preventDefault()
         session.abort()
       }
