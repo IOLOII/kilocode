@@ -262,7 +262,7 @@ export const dict = {
   "dialog.mcp.empty": "未設定 MCP",
 
   "dialog.lsp.empty": "已從檔案類型自動偵測到 LSPs",
-  "dialog.plugins.empty": "在 opencode.json 中設定的外掛程式",
+  "dialog.plugins.empty": "在 kilo.jsonc 中設定的外掛程式",
 
   "mcp.status.connected": "已連線",
   "mcp.status.failed": "失敗",
@@ -436,7 +436,7 @@ export const dict = {
   "error.chain.responseBody": "回應內容:\n{{body}}",
   "error.chain.didYouMean": "你是不是想輸入：{{suggestions}}",
   "error.chain.modelNotFound": "找不到模型：{{provider}}/{{model}}",
-  "error.chain.checkConfig": "請檢查你的設定 (opencode.json) 中的 provider/model 名稱",
+  "error.chain.checkConfig": "請檢查你的設定 (kilo.jsonc) 中的 provider/model 名稱",
   "error.chain.mcpFailed": 'MCP 伺服器 "{{name}}" 啟動失敗。注意：Kilo 暫不支援 MCP 認證。',
   "error.chain.providerAuthFailed": "供應商認證失敗 ({{provider}}): {{message}}",
   "error.chain.providerInitFailed": '無法初始化供應商 "{{provider}}"。請檢查憑證和設定。',
@@ -1124,11 +1124,11 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.args": "引數",
   "settings.agentBehaviour.mcpDetail.env": "環境",
   "settings.agentBehaviour.mcpDetail.disabled": "此伺服器已停用。",
-  "settings.agentBehaviour.mcpEmpty": "未設定 MCP 伺服器。編輯 opencode 設定檔以新增 MCP 伺服器。",
+  "settings.agentBehaviour.mcpEmpty": "未設定 MCP 伺服器。編輯 kilo.jsonc 以新增 MCP 伺服器，或請代理為您新增。",
   "settings.agentBehaviour.workflowsPlaceholder": "工作流程透過工作區中的工作流程檔案管理。",
   "settings.agentBehaviour.workflows.description":
-    "工作流程是在設定中定義的自訂斜線命令。在聊天中輸入 /command-name 來呼叫它們。命令在 opencode.json 的 'command' 區段中設定。",
-  "settings.agentBehaviour.workflows.empty": "未設定自訂命令。將命令新增至 opencode.json 即可在此處看到。",
+    "工作流程是在設定中定義的自訂斜線命令。在聊天中輸入 /command-name 來呼叫它們。命令在 kilo.jsonc 的 'command' 區段中設定。",
+  "settings.agentBehaviour.workflows.empty": "未設定自訂命令。將命令新增至 kilo.jsonc 即可在此處看到。",
   "settings.agentBehaviour.workflows.detail.description": "描述",
   "settings.agentBehaviour.workflows.detail.template": "範本",
 

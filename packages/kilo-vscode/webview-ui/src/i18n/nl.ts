@@ -263,7 +263,7 @@ export const dict = {
   "dialog.mcp.empty": "Geen MCP's geconfigureerd",
 
   "dialog.lsp.empty": "LSP's automatisch gedetecteerd uit bestandstypen",
-  "dialog.plugins.empty": "Plug-ins geconfigureerd in opencode.json",
+  "dialog.plugins.empty": "Plug-ins geconfigureerd in kilo.jsonc",
 
   "mcp.status.connected": "verbonden",
   "mcp.status.failed": "mislukt",
@@ -441,7 +441,7 @@ export const dict = {
   "error.chain.responseBody": "Antwoord-body:\n{{body}}",
   "error.chain.didYouMean": "Bedoelde je: {{suggestions}}",
   "error.chain.modelNotFound": "Model niet gevonden: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "Controleer je configuratie (opencode.json) provider/model namen",
+  "error.chain.checkConfig": "Controleer je configuratie (kilo.jsonc) provider/model namen",
   "error.chain.mcpFailed": 'MCP-server "{{name}}" is mislukt. Let op, Kilo ondersteunt nog geen MCP-authenticatie.',
   "error.chain.providerAuthFailed": "Provider-authenticatie mislukt ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
@@ -1135,12 +1135,12 @@ export const dict = {
   "settings.agentBehaviour.addMcp.url": "Server-URL",
   "settings.agentBehaviour.addMcp.url.placeholder": "e.g. http://localhost:3000/sse",
   "settings.agentBehaviour.mcpEmpty":
-    "Geen MCP-servers geconfigureerd. Bewerk het opencode configuratiebestand om MCP-servers toe te voegen.",
+    "Geen MCP-servers geconfigureerd. Bewerk kilo.jsonc om MCP-servers toe te voegen, of vraag de agent om er een voor je toe te voegen.",
   "settings.agentBehaviour.workflowsPlaceholder": "Workflows worden beheerd via workflowbestanden in je workspace.",
   "settings.agentBehaviour.workflows.description":
-    "Workflows zijn aangepaste slash-commando's gedefinieerd in je configuratie. Typ /command-name in de chat om ze aan te roepen. Commando's worden geconfigureerd in opencode.json onder de sectie 'command'.",
+    "Workflows zijn aangepaste slash-commando's gedefinieerd in je configuratie. Typ /command-name in de chat om ze aan te roepen. Commando's worden geconfigureerd in kilo.jsonc onder de sectie 'command'.",
   "settings.agentBehaviour.workflows.empty":
-    "Geen aangepaste commando's geconfigureerd. Voeg commando's toe aan opencode.json om ze hier te zien.",
+    "Geen aangepaste commando's geconfigureerd. Voeg commando's toe aan kilo.jsonc om ze hier te zien.",
   "settings.agentBehaviour.workflows.detail.description": "Beschrijving",
   "settings.agentBehaviour.workflows.detail.template": "Sjabloon",
 

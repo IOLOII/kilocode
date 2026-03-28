@@ -261,7 +261,7 @@ export const dict = {
   "dialog.mcp.empty": "لم يتم تكوين MCPs",
 
   "dialog.lsp.empty": "تم الكشف تلقائيًا عن LSPs من أنواع الملفات",
-  "dialog.plugins.empty": "الإضافات المكونة في opencode.json",
+  "dialog.plugins.empty": "الإضافات المكونة في kilo.jsonc",
 
   "mcp.status.connected": "متصل",
   "mcp.status.failed": "فشل",
@@ -438,7 +438,7 @@ export const dict = {
   "error.chain.responseBody": "نص الاستجابة:\n{{body}}",
   "error.chain.didYouMean": "هل كنت تعني: {{suggestions}}",
   "error.chain.modelNotFound": "النموذج غير موجود: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "تحقق من أسماء الموفر/النموذج في التكوين (opencode.json)",
+  "error.chain.checkConfig": "تحقق من أسماء الموفر/النموذج في التكوين (kilo.jsonc)",
   "error.chain.mcpFailed": 'فشل خادم MCP "{{name}}". لاحظ أن Kilo لا يدعم مصادقة MCP بعد.',
   "error.chain.providerAuthFailed": "فشلت مصادقة الموفر ({{provider}}): {{message}}",
   "error.chain.providerInitFailed": 'فشل تهيئة الموفر "{{provider}}". تحقق من بيانات الاعتماد والتكوين.',
@@ -1135,11 +1135,12 @@ export const dict = {
   "settings.agentBehaviour.mcpDetail.args": "الوسائط",
   "settings.agentBehaviour.mcpDetail.env": "البيئة",
   "settings.agentBehaviour.mcpDetail.disabled": "هذا الخادم معطّل.",
-  "settings.agentBehaviour.mcpEmpty": "لم يتم تهيئة خوادم MCP. قم بتحرير ملف تهيئة opencode لإضافة خوادم MCP.",
+  "settings.agentBehaviour.mcpEmpty":
+    "لم يتم تهيئة خوادم MCP. قم بتحرير kilo.jsonc لإضافة خوادم MCP، أو اطلب من الوكيل إضافة واحد لك.",
   "settings.agentBehaviour.workflowsPlaceholder": "تُدار سير العمل عبر ملفات سير العمل في مساحة العمل.",
   "settings.agentBehaviour.workflows.description":
-    "سير العمل هي أوامر شرطة مائلة مخصصة محددة في التهيئة الخاصة بك. اكتب /command-name في الدردشة لتشغيلها. يتم تهيئة الأوامر في opencode.json ضمن قسم 'command'.",
-  "settings.agentBehaviour.workflows.empty": "لم يتم تهيئة أوامر مخصصة. أضف أوامر إلى opencode.json لرؤيتها هنا.",
+    "سير العمل هي أوامر شرطة مائلة مخصصة محددة في التهيئة الخاصة بك. اكتب /command-name في الدردشة لتشغيلها. يتم تهيئة الأوامر في kilo.jsonc ضمن قسم 'command'.",
+  "settings.agentBehaviour.workflows.empty": "لم يتم تهيئة أوامر مخصصة. أضف أوامر إلى kilo.jsonc لرؤيتها هنا.",
   "settings.agentBehaviour.workflows.detail.description": "الوصف",
   "settings.agentBehaviour.workflows.detail.template": "القالب",
 
