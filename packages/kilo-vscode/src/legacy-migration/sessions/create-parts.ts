@@ -2,6 +2,8 @@ import type { KilocodeSessionImportPartData as Part } from "@kilocode/sdk/v2"
 import type { LegacyApiMessage, LegacyHistoryItem } from "./legacy-session-types"
 import { getApiConversationHistory, parseFile } from "./api-history"
 import { createMessageID, createPartID, createSessionID } from "./ids"
+import { createToolUsePart, isText, isToolResult, isToolUse } from "./create-parts-util"
+import { mergeToolUseAndResult, thereIsNoToolResult } from "./merge-tool-parts"
 
 export async function createParts(id: string, dir: string, item?: LegacyHistoryItem): Promise<Array<NonNullable<Part["body"]>>> {
   const file = await getApiConversationHistory(id, dir)
@@ -66,52 +68,15 @@ function parseParts(
       return
     }
 
-    if (isToolUse(part)) {
-      const tool = typeof part.name === "string" ? part.name : "unknown"
-      parts.push({
-        id: partID,
-        messageID,
-        sessionID,
-        timeCreated: created,
-        data: {
-          type: "tool",
-          callID: part.id ?? partID,
-          tool,
-          state: {
-            // We store tool_use as completed for now because we only have historical snapshots, not live transitions.
-            status: "completed",
-            input: record(part.input),
-            output: tool,
-            title: tool,
-            metadata: {},
-            time: {
-              start: created,
-              end: created,
-            },
-          },
-        },
-      })
+    if (isToolUse(part) && thereIsNoToolResult(entry, part.id)) {
+      parts.push(createToolUsePart(partID, messageID, sessionID, created, part))
       return
     }
 
     if (isToolResult(part)) {
-      const text = getText(part.content)
-      if (!text) return
-      parts.push({
-        id: partID,
-        messageID,
-        sessionID,
-        timeCreated: created,
-        data: {
-          type: "text",
-          // tool_result is preserved as text until we add richer tool/result reconciliation.
-          text,
-          time: {
-            start: created,
-            end: created,
-          },
-        },
-      })
+      const tool = mergeToolUseAndResult(partID, messageID, sessionID, created, entry, part)
+      if (!tool) return
+      parts.push(tool)
       return
     }
 
@@ -135,34 +100,4 @@ function parseParts(
   })
 
   return parts
-}
-
-function getText(input: unknown) {
-  if (typeof input === "string") return input
-  if (!Array.isArray(input)) return undefined
-  const text = input
-    .flatMap((item) => {
-      if (isText(item) && item.text) return [item.text]
-      return []
-    })
-    .join("\n")
-    .trim()
-  return text || undefined
-}
-
-function record(input: unknown): Record<string, unknown> {
-  if (!input || typeof input !== "object" || Array.isArray(input)) return {}
-  return input as Record<string, unknown>
-}
-
-function isText(input: unknown): input is { type?: string; text?: string } {
-  return Boolean(input && typeof input === "object" && "type" in input && input.type === "text")
-}
-
-function isToolUse(input: unknown): input is { type?: string; id?: string; name?: string; input?: unknown } {
-  return Boolean(input && typeof input === "object" && "type" in input && input.type === "tool_use")
-}
-
-function isToolResult(input: unknown): input is { type?: string; content?: unknown } {
-  return Boolean(input && typeof input === "object" && "type" in input && input.type === "tool_result")
 }
