@@ -22,9 +22,15 @@ export async function normalizeSession(input: {
   dir: string
   item?: LegacyHistoryItem
 }): Promise<NormalizedSession> {
+  const project = createProject({ item: input.item })
+
   return {
-    project: createProject({ item: input.item }),
-    session: createSession(),
+    project,
+    session: createSession({
+      id: input.id,
+      item: input.item,
+      projectID: project.id,
+    }),
     messages: createMessages(),
     parts: createParts(),
   }
