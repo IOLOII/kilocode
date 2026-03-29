@@ -17,7 +17,10 @@ export async function migrateSession(input: {
     item,
   })
 
-  // await input.client.session.import(payload, { throwOnError: true })
+  // await input.client.kilocode.sessionImport.project(payload.project, { throwOnError: true })
+  // await input.client.kilocode.sessionImport.session(payload.session, { throwOnError: true })
+  // for (const msg of payload.messages) await input.client.kilocode.sessionImport.message(msg, { throwOnError: true })
+  // for (const part of payload.parts) await input.client.kilocode.sessionImport.part(part, { throwOnError: true })
 
   // Adjust return based on backend call response
   return {
