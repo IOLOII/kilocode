@@ -6143,11 +6143,177 @@
                     "type": "number"
                   },
                   "data": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "role": {
+                            "type": "string",
+                            "const": "user"
+                          },
+                          "time": {
+                            "type": "object",
+                            "properties": {
+                              "created": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "created"
+                            ]
+                          },
+                          "agent": {
+                            "type": "string"
+                          },
+                          "model": {
+                            "type": "object",
+                            "properties": {
+                              "providerID": {
+                                "type": "string"
+                              },
+                              "modelID": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "providerID",
+                              "modelID"
+                            ]
+                          },
+                          "tools": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
+                        "required": [
+                          "role",
+                          "time",
+                          "agent",
+                          "model"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "role": {
+                            "type": "string",
+                            "const": "assistant"
+                          },
+                          "time": {
+                            "type": "object",
+                            "properties": {
+                              "created": {
+                                "type": "number"
+                              },
+                              "completed": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "created"
+                            ]
+                          },
+                          "parentID": {
+                            "type": "string"
+                          },
+                          "modelID": {
+                            "type": "string"
+                          },
+                          "providerID": {
+                            "type": "string"
+                          },
+                          "mode": {
+                            "type": "string"
+                          },
+                          "agent": {
+                            "type": "string"
+                          },
+                          "path": {
+                            "type": "object",
+                            "properties": {
+                              "cwd": {
+                                "type": "string"
+                              },
+                              "root": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "cwd",
+                              "root"
+                            ]
+                          },
+                          "summary": {
+                            "type": "boolean"
+                          },
+                          "cost": {
+                            "type": "number"
+                          },
+                          "tokens": {
+                            "type": "object",
+                            "properties": {
+                              "total": {
+                                "type": "number"
+                              },
+                              "input": {
+                                "type": "number"
+                              },
+                              "output": {
+                                "type": "number"
+                              },
+                              "reasoning": {
+                                "type": "number"
+                              },
+                              "cache": {
+                                "type": "object",
+                                "properties": {
+                                  "read": {
+                                    "type": "number"
+                                  },
+                                  "write": {
+                                    "type": "number"
+                                  }
+                                },
+                                "required": [
+                                  "read",
+                                  "write"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "input",
+                              "output",
+                              "reasoning",
+                              "cache"
+                            ]
+                          },
+                          "structured": {},
+                          "variant": {
+                            "type": "string"
+                          },
+                          "finish": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "role",
+                          "time",
+                          "parentID",
+                          "modelID",
+                          "providerID",
+                          "mode",
+                          "agent",
+                          "path",
+                          "cost",
+                          "tokens"
+                        ]
+                      }
+                    ]
                   }
                 },
                 "required": [
@@ -6242,11 +6408,289 @@
                     "type": "number"
                   },
                   "data": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "text"
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "synthetic": {
+                            "type": "boolean"
+                          },
+                          "ignored": {
+                            "type": "boolean"
+                          },
+                          "time": {
+                            "type": "object",
+                            "properties": {
+                              "start": {
+                                "type": "number"
+                              },
+                              "end": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "start"
+                            ]
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {}
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "text"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "reasoning"
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {}
+                          },
+                          "time": {
+                            "type": "object",
+                            "properties": {
+                              "start": {
+                                "type": "number"
+                              },
+                              "end": {
+                                "type": "number"
+                              }
+                            },
+                            "required": [
+                              "start"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "text",
+                          "time"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "const": "tool"
+                          },
+                          "callID": {
+                            "type": "string"
+                          },
+                          "tool": {
+                            "type": "string"
+                          },
+                          "state": {
+                            "anyOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "const": "pending"
+                                  },
+                                  "input": {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  "raw": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "status",
+                                  "input",
+                                  "raw"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "const": "running"
+                                  },
+                                  "input": {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  "time": {
+                                    "type": "object",
+                                    "properties": {
+                                      "start": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "start"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "status",
+                                  "input",
+                                  "time"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "const": "completed"
+                                  },
+                                  "input": {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  "output": {
+                                    "type": "string"
+                                  },
+                                  "title": {
+                                    "type": "string"
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  "time": {
+                                    "type": "object",
+                                    "properties": {
+                                      "start": {
+                                        "type": "number"
+                                      },
+                                      "end": {
+                                        "type": "number"
+                                      },
+                                      "compacted": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "start",
+                                      "end"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "status",
+                                  "input",
+                                  "output",
+                                  "title",
+                                  "metadata",
+                                  "time"
+                                ]
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "status": {
+                                    "type": "string",
+                                    "const": "error"
+                                  },
+                                  "input": {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  "error": {
+                                    "type": "string"
+                                  },
+                                  "metadata": {
+                                    "type": "object",
+                                    "propertyNames": {
+                                      "type": "string"
+                                    },
+                                    "additionalProperties": {}
+                                  },
+                                  "time": {
+                                    "type": "object",
+                                    "properties": {
+                                      "start": {
+                                        "type": "number"
+                                      },
+                                      "end": {
+                                        "type": "number"
+                                      }
+                                    },
+                                    "required": [
+                                      "start",
+                                      "end"
+                                    ]
+                                  }
+                                },
+                                "required": [
+                                  "status",
+                                  "input",
+                                  "error",
+                                  "time"
+                                ]
+                              }
+                            ]
+                          },
+                          "metadata": {
+                            "type": "object",
+                            "propertyNames": {
+                              "type": "string"
+                            },
+                            "additionalProperties": {}
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "callID",
+                          "tool",
+                          "state"
+                        ]
+                      }
+                    ]
                   }
                 },
                 "required": [
