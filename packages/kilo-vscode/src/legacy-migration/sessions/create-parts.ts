@@ -5,6 +5,7 @@ import { createMessageID, createPartID, createSessionID } from "./ids"
 import { createReasoningPart, createSimpleTextPart, createTextPartWithinMessage, createToolUsePart } from "./create-parts-builders"
 import {
   getReasoningText,
+  isCompletionResultPart,
   isProviderSpecificReasoningPart,
   isReasoningPart,
   isSimpleTextPart,
@@ -45,6 +46,14 @@ function parseParts(
     // Legacy can store a message as several pieces; this handles one text block inside that larger message.
     if (isSingleTextPartWithinMessage(part)) {
       parts.push(createTextPartWithinMessage(partID, messageID, sessionID, created, part.text))
+      return
+    }
+
+    // The legacy session can contain a final completion message after an assistant interaction.
+    // Treat it like a regular assistant text part so the migrated session keeps that final visible answer.
+    if (isCompletionResultPart(part)) {
+      const text = part.input.result
+      parts.push(createTextPartWithinMessage(partID, messageID, sessionID, created, text))
       return
     }
 

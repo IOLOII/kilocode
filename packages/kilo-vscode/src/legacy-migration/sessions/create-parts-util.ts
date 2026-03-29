@@ -45,6 +45,23 @@ export function isSingleTextPartWithinMessage(input: unknown): input is { type?:
   return isText(input) && Boolean(input.text)
 }
 
+export function isCompletionResultPart(input: unknown): input is { type?: string; name?: string; input: { result: string } } {
+  return Boolean(
+    input &&
+      typeof input === "object" &&
+      "type" in input &&
+      input.type === "tool_use" &&
+      "name" in input &&
+      input.name === "attempt_completion" &&
+      "input" in input &&
+      input.input &&
+      typeof input.input === "object" &&
+      "result" in input.input &&
+      typeof input.input.result === "string" &&
+      input.input.result,
+  )
+}
+
 export function record(input: unknown): Record<string, unknown> {
   if (!input || typeof input !== "object" || Array.isArray(input)) return {}
   return input as Record<string, unknown>
