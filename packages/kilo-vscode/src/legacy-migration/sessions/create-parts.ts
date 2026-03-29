@@ -19,13 +19,14 @@ export async function createParts(id: string, dir: string, item?: LegacyHistoryI
   const file = await getApiConversationHistory(id, dir)
   const conversation = parseFile(file)
 
-  return conversation.flatMap((entry, index) => parseParts(entry, index, id, item))
+  return conversation.flatMap((entry, index) => parseParts(entry, index, id, conversation, item))
 }
 
 function parseParts(
   entry: LegacyApiMessage,
   index: number,
   id: string,
+  conversation: LegacyApiMessage[],
   item?: LegacyHistoryItem,
 ): Array<NonNullable<Part["body"]>> {
   const messageID = createMessageID(id, index)
@@ -63,7 +64,9 @@ function parseParts(
     }
 
     if (isToolResult(part)) {
-      const tool = mergeToolUseAndResult(partID, messageID, sessionID, created, entry, part)
+      // tool_result usually lives in the following user message, while the matching tool_use lives
+      // in the earlier assistant message, so we need the whole conversation to reconcile both halves.
+      const tool = mergeToolUseAndResult(partID, messageID, sessionID, created, conversation, part)
       if (!tool) return
       parts.push(tool)
       return

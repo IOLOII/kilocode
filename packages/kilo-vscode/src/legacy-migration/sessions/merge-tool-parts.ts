@@ -14,10 +14,10 @@ export function mergeToolUseAndResult(
   messageID: string,
   sessionID: string,
   created: number,
-  entry: LegacyApiMessage,
+  conversation: LegacyApiMessage[],
   result: { type?: string; tool_use_id?: string; content?: unknown },
 ): NonNullable<Part["body"]> | undefined {
-  const tool = getToolUse(entry, result.tool_use_id)
+  const tool = getToolUseFromConversation(conversation, result.tool_use_id)
   if (!tool) return undefined
   const callID = typeof tool.id === "string" ? tool.id : partID
   const name = typeof tool.name === "string" ? tool.name : "unknown"
@@ -53,4 +53,12 @@ export function mergeToolUseAndResult(
 export function thereIsNoToolResult(entry: LegacyApiMessage, id: string | undefined) {
   if (!Array.isArray(entry.content)) return true
   return !entry.content.some((part) => isToolResult(part) && part.tool_use_id === id)
+}
+
+function getToolUseFromConversation(conversation: LegacyApiMessage[], id: string | undefined) {
+  for (const entry of conversation) {
+    const tool = getToolUse(entry, id)
+    if (tool) return tool
+  }
+  return undefined
 }
