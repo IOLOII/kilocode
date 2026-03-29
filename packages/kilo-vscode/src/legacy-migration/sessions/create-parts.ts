@@ -1,6 +1,7 @@
 import type { KilocodeSessionImportPartData as Part } from "@kilocode/sdk/v2"
 import type { LegacyApiMessage, LegacyHistoryItem } from "./legacy-session-types"
 import { getApiConversationHistory, parseFile } from "./api-history"
+import { createMessageID, createPartID, createSessionID } from "./ids"
 
 export async function createParts(id: string, dir: string, item?: LegacyHistoryItem): Promise<Array<NonNullable<Part["body"]>>> {
   const file = await getApiConversationHistory(id, dir)
@@ -15,16 +16,17 @@ function parseParts(
   id: string,
   item?: LegacyHistoryItem,
 ): Array<NonNullable<Part["body"]>> {
-  const messageID = `msg_${id}_${index}`
+  const messageID = createMessageID(id, index)
+  const sessionID = createSessionID(id)
   const created = entry.ts ?? item?.ts ?? 0
 
   if (typeof entry.content === "string") {
     if (!entry.content) return []
     return [
       {
-        id: `prt_${id}_${index}_0`,
+        id: createPartID(id, index, 0),
         messageID,
-        sessionID: id,
+        sessionID,
         timeCreated: created,
         data: {
           type: "text",
@@ -44,13 +46,13 @@ function parseParts(
   const parts: Array<NonNullable<Part["body"]>> = []
 
   entry.content.forEach((part, partIndex) => {
-    const partID = `prt_${id}_${index}_${partIndex}`
+    const partID = createPartID(id, index, partIndex)
 
     if (isText(part) && part.text) {
       parts.push({
         id: partID,
         messageID,
-        sessionID: id,
+        sessionID,
         timeCreated: created,
         data: {
           type: "text",
@@ -69,7 +71,7 @@ function parseParts(
       parts.push({
         id: partID,
         messageID,
-        sessionID: id,
+        sessionID,
         timeCreated: created,
         data: {
           type: "tool",
@@ -98,7 +100,7 @@ function parseParts(
       parts.push({
         id: partID,
         messageID,
-        sessionID: id,
+        sessionID,
         timeCreated: created,
         data: {
           type: "text",
@@ -117,7 +119,7 @@ function parseParts(
       parts.push({
         id: partID,
         messageID,
-        sessionID: id,
+        sessionID,
         timeCreated: created,
         data: {
           type: "reasoning",

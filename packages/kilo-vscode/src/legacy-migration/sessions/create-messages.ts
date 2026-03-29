@@ -1,6 +1,7 @@
 import type { KilocodeSessionImportMessageData as Message } from "@kilocode/sdk/v2"
 import type { LegacyApiMessage, LegacyHistoryItem } from "./legacy-session-types"
 import { getApiConversationHistory, parseFile } from "./api-history"
+import { createMessageID, createSessionID } from "./ids"
 
 export async function createMessages(id: string, dir: string, item?: LegacyHistoryItem): Promise<Array<NonNullable<Message["body"]>>> {
   const file = await getApiConversationHistory(id, dir)
@@ -21,8 +22,8 @@ function parseMessage(
 
   if (entry.role === "user") {
     return {
-      id: `msg_${id}_${index}`,
-      sessionID: id,
+      id: createMessageID(id, index),
+      sessionID: createSessionID(id),
       timeCreated: created,
       data: {
         role: "user",
@@ -38,13 +39,13 @@ function parseMessage(
 
   if (entry.role === "assistant") {
     return {
-      id: `msg_${id}_${index}`,
-      sessionID: id,
+      id: createMessageID(id, index),
+      sessionID: createSessionID(id),
       timeCreated: created,
       data: {
         role: "assistant",
         time: { created, completed: created },
-        parentID: index > 0 ? `msg_${id}_${index - 1}` : `msg_${id}_${index}`,
+        parentID: index > 0 ? createMessageID(id, index - 1) : createMessageID(id, index),
         modelID: "legacy",
         providerID: "legacy",
         mode: item?.mode ?? "code",

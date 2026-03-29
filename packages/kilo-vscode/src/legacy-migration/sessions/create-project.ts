@@ -1,10 +1,11 @@
 import type { KilocodeSessionImportProjectData as Project } from "@kilocode/sdk/v2"
 import type { LegacyHistoryItem } from "./legacy-session-types"
+import { createProjectID } from "./ids"
 
 export function createProject(item?: LegacyHistoryItem): NonNullable<Project["body"]> {
   const project = makeProject()
 
-  project.id = item?.workspace ?? ""
+  project.id = createProjectID(item?.workspace)
   project.worktree = item?.workspace ?? ""
   project.sandboxes = item?.workspace ? [item.workspace] : []
 

@@ -1,10 +1,11 @@
 import type { KilocodeSessionImportSessionData as Session } from "@kilocode/sdk/v2"
 import type { LegacyHistoryItem } from "./legacy-session-types"
+import { createSessionID } from "./ids"
 
 export function createSession(id: string, item: LegacyHistoryItem | undefined, projectID: string): NonNullable<Session["body"]> {
   const session = makeSession()
 
-  session.id = id
+  session.id = createSessionID(id)
   session.projectID = projectID
   session.slug = id
 
