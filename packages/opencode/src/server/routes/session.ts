@@ -17,6 +17,7 @@ import { PermissionNext } from "@/permission/next"
 import { errors } from "../error"
 import { lazy } from "../../util/lazy"
 import { SystemPrompt } from "../../session/system" // kilocode_change
+import { InstructionPrompt } from "../../session/instruction" // kilocode_change
 import { Provider } from "@/provider/provider" // kilocode_change
 
 const log = Log.create({ service: "server" })
@@ -190,11 +191,11 @@ export const SessionRoutes = lazy(() =>
       describeRoute({
         summary: "Get system prompt",
         description:
-          "Assemble and return the current system prompt for a session, including source metadata showing what instruction files, prompts, and environment context contribute to the final prompt.",
+          "Assemble and return the current system prompt for a session. Uses the same SystemPrompt.header() function as LLM.stream() to build the identity segment, plus environment and instruction files.",
         operationId: "session.system_prompt",
         responses: {
           200: {
-            description: "System prompt with source metadata",
+            description: "Assembled system prompt segments",
             content: {
               "application/json": {
                 schema: resolver(SystemPrompt.Inspect),
@@ -233,11 +234,16 @@ export const SessionRoutes = lazy(() =>
         // Fall back to default model if no messages exist
         const fallback = providerID && modelID ? { providerID, modelID } : await Provider.defaultModel()
         const model = await Provider.getModel(fallback.providerID, fallback.modelID)
-
         const agent = agentName ? await Agent.get(agentName) : undefined
 
-        const result = await SystemPrompt.inspect(model, agent, editorContext)
-        return c.json(result)
+        // Build system array using the same header() as LLM.stream(),
+        // plus environment and instruction files from SessionPrompt.loop()
+        const identity = SystemPrompt.header({ model, agent })
+        const env = await SystemPrompt.environment(model, editorContext)
+        const instructions = await InstructionPrompt.system()
+        const system = [identity, ...env, ...instructions]
+
+        return c.json({ system })
       },
     )
     // kilocode_change end

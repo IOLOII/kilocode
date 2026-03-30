@@ -72,21 +72,14 @@ export namespace LLM {
     const isCodex = provider.id === "openai" && auth?.type === "oauth"
 
     const system = []
+    // kilocode_change - use shared header() so inspection endpoint stays in sync
     system.push(
-      [
-        // kilocode_change start - soul defines core identity and personality
-        ...(isCodex ? [] : [SystemPrompt.soul()]),
-        // kilocode_change end
-        // use agent prompt otherwise provider prompt
-        // For Codex sessions, skip SystemPrompt.provider() since it's sent via options.instructions
-        ...(input.agent.prompt ? [input.agent.prompt] : isCodex ? [] : SystemPrompt.provider(input.model)),
-        // any custom prompt passed into this call
-        ...input.system,
-        // any custom prompt from last user message
-        ...(input.user.system ? [input.user.system] : []),
-      ]
-        .filter((x) => x)
-        .join("\n"),
+      SystemPrompt.header({
+        model: input.model,
+        agent: input.agent,
+        codex: isCodex,
+        extra: [...input.system, ...(input.user.system ? [input.user.system] : [])],
+      }),
     )
 
     const header = system[0]

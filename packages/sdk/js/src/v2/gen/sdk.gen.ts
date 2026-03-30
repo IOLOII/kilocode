@@ -1667,7 +1667,7 @@ export class Session2 extends HeyApiClient {
   /**
    * Get system prompt
    *
-   * Assemble and return the current system prompt for a session, including source metadata showing what instruction files, prompts, and environment context contribute to the final prompt.
+   * Assemble and return the current system prompt for a session. Uses the same SystemPrompt.header() function as LLM.stream() to build the identity segment, plus environment and instruction files.
    */
   public systemPrompt<ThrowOnError extends boolean = false>(
     parameters: {

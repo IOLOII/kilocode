@@ -1,0 +1,68 @@
+/**
+ * System Prompt View styles
+ */
+
+[data-component="system-prompt-view"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background-color: var(--background-base);
+  overflow-y: auto;
+
+  [data-slot="system-prompt-header"] {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 16px;
+    border-bottom: 1px solid var(--border-weak-base);
+    position: sticky;
+    top: 0;
+    background-color: var(--background-base);
+    z-index: 1;
+  }
+
+  [data-slot="system-prompt-title"] {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-base);
+  }
+
+  [data-slot="system-prompt-actions"] {
+    display: flex;
+    gap: 2px;
+
+    [data-copied] {
+      color: var(--text-success, var(--vscode-testing-iconPassed, #5cb85c));
+    }
+  }
+
+  [data-slot="system-prompt-loading"] {
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  [data-slot="system-prompt-content"] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  [data-slot="system-prompt-segment"] {
+    margin: 0;
+    padding: 8px 16px;
+    font-size: 11px;
+    font-family: var(--font-mono, monospace);
+    line-height: 1.5;
+    color: var(--text-base);
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-bottom: 1px solid var(--border-weak-base);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}

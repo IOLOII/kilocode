@@ -2509,41 +2509,14 @@
           }
         ],
         "summary": "Get system prompt",
-        "description": "Assemble and return the current system prompt for a session, including source metadata showing what instruction files, prompts, and environment context contribute to the final prompt.",
+        "description": "Assemble and return the current system prompt for a session. Uses the same SystemPrompt.header() function as LLM.stream() to build the identity segment, plus environment and instruction files.",
         "responses": {
           "200": {
-            "description": "System prompt with source metadata",
+            "description": "Assembled system prompt segments",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "system": {
-                      "type": "array",
-                      "items": {
-                        "type": "string"
-                      }
-                    },
-                    "sources": {
-                      "type": "array",
-                      "items": {
-                        "type": "object",
-                        "properties": {
-                          "name": {
-                            "type": "string"
-                          },
-                          "content": {
-                            "type": "string"
-                          },
-                          "path": {
-                            "type": "string"
-                          }
-                        },
-                        "required": ["name", "content"]
-                      }
-                    }
-                  },
-                  "required": ["system", "sources"]
+                  "$ref": "#/components/schemas/SystemPromptInspect"
                 }
               }
             }
@@ -13262,6 +13235,18 @@
           }
         },
         "required": ["name", "uri", "client"]
+      },
+      "SystemPromptInspect": {
+        "type": "object",
+        "properties": {
+          "system": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["system"]
       },
       "TextPartInput": {
         "type": "object",

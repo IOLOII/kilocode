@@ -1982,17 +1982,10 @@ export interface RequestRecentsMessage {
 }
 
 // System prompt inspection
-export interface SystemPromptSource {
-  name: string
-  content: string
-  path?: string
-}
-
 export interface SystemPromptLoadedMessage {
   type: "systemPromptLoaded"
   sessionID: string
   system: string[]
-  sources: SystemPromptSource[]
 }
 
 export interface RequestSystemPromptMessage {

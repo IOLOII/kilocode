@@ -1776,6 +1776,10 @@ export type McpResource = {
   client: string
 }
 
+export type SystemPromptInspect = {
+  system: Array<string>
+}
+
 export type TextPartInput = {
   id?: string
   type: "text"
@@ -3196,16 +3200,9 @@ export type SessionSystemPromptError = SessionSystemPromptErrors[keyof SessionSy
 
 export type SessionSystemPromptResponses = {
   /**
-   * System prompt with source metadata
+   * Assembled system prompt segments
    */
-  200: {
-    system: Array<string>
-    sources: Array<{
-      name: string
-      content: string
-      path?: string
-    }>
-  }
+  200: SystemPromptInspect
 }
 
 export type SessionSystemPromptResponse = SessionSystemPromptResponses[keyof SessionSystemPromptResponses]

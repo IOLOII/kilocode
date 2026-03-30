@@ -1538,7 +1538,6 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         type: "systemPromptLoaded",
         sessionID,
         system: data.system,
-        sources: data.sources,
       })
     } catch (error) {
       console.error("[Kilo New] KiloProvider: Failed to fetch system prompt:", error)
