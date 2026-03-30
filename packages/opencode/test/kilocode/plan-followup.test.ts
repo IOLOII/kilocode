@@ -446,6 +446,7 @@ describe("plan follow-up", () => {
 
       const newSessionID = created[0]
       expect(added[0].id).toBe(newSessionID)
+      expect(added[0].parentID).toBe(seeded.sessionID)
       const messages = await Session.messages({ sessionID: newSessionID })
       const user = messages.find((item) => item.info.role === "user")
       expect(user?.info.role).toBe("user")
@@ -472,6 +473,59 @@ describe("plan follow-up", () => {
       expect(newTodos).toContainEqual({ content: "Write tests", status: "pending", priority: "medium" })
 
       SessionPrompt.cancel(newSessionID)
+    }))
+
+  test("ask - creates a new session in the planning session directory when the current instance differs", () =>
+    withInstance(async () => {
+      const get = spyOn(Agent, "get").mockImplementation(async () => undefined as any)
+      const modelSpy = spyOn(Provider, "getModel").mockResolvedValue(fakeModel)
+      const llmSpy = spyOn(LLM, "stream").mockResolvedValue({
+        text: Promise.resolve(""),
+      } as any)
+      using _mocks = {
+        [Symbol.dispose]() {
+          get.mockRestore()
+          modelSpy.mockRestore()
+          llmSpy.mockRestore()
+        },
+      }
+
+      const dir = path.join(Instance.directory, "worktrees", "feature")
+      await fs.mkdir(dir, { recursive: true })
+
+      const seeded = await Instance.provide({
+        directory: dir,
+        fn: async () => seed({ text: "1. Add API\n2. Add tests" }),
+      })
+
+      const before = await sessions()
+      const pending = PlanFollowup.ask({
+        sessionID: seeded.sessionID,
+        messages: seeded.messages,
+        abort: AbortSignal.any([]),
+      })
+
+      const item = await waitQuestion(seeded.sessionID)
+      expect(item).toBeDefined()
+      if (!item) return
+
+      await Question.reply({
+        requestID: item.id,
+        answers: [[PlanFollowup.ANSWER_NEW_SESSION]],
+      })
+
+      await expect(pending).resolves.toBe("break")
+
+      const after = await sessions()
+      const prev = new Set(before.map((item) => item.id))
+      const added = after.filter((item) => !prev.has(item.id))
+      expect(added).toHaveLength(1)
+      expect(added[0]?.directory).toBe(dir)
+      expect(added[0]?.parentID).toBe(seeded.sessionID)
+
+      if (added[0]) {
+        SessionPrompt.cancel(added[0].id)
+      }
     }))
 
   test("ask - prefers saved code variant over configured code variant", () =>

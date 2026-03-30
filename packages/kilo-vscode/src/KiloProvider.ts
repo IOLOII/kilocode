@@ -668,10 +668,10 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
           break
 
         case "questionReply":
-          await handleQuestionReply(this.questionCtx, message.requestID, message.answers)
+          await handleQuestionReply(this.questionCtx, message.requestID, message.answers, message.sessionID)
           break
         case "questionReject":
-          await handleQuestionReject(this.questionCtx, message.requestID)
+          await handleQuestionReject(this.questionCtx, message.requestID, message.sessionID)
           break
         case "requestConfig":
           this.fetchAndSendConfig().catch((e) => console.error("[Kilo New] fetchAndSendConfig failed:", e))

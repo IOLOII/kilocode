@@ -19,6 +19,7 @@ import { createTerminalHost } from "./terminal-host"
 import { executeVscodeTask } from "./task-runner"
 import { forkSession } from "./fork-session"
 import { continueInWorktree } from "./continue-in-worktree"
+import { adoptSession } from "./adopt-session"
 import { shouldStopDiffPolling } from "./delete-worktree"
 import { buildKeybindingMap } from "./format-keybinding"
 import { resolveVersionModels, buildInitialMessages, type CreatedVersion } from "./multi-version"
@@ -58,11 +59,11 @@ export class AgentManagerProvider implements Disposable {
   private cachedWorktreeStats: AgentManagerOutMessage | undefined
   private cachedLocalStats: AgentManagerOutMessage | undefined
   private applyingWorktreeId: string | undefined
+  private offCreated: () => void
   /** Session ID most recently loaded via a `loadMessages` message from the webview.
    *  Updated synchronously — unlike the session provider's currentSession which depends on
    *  an async `session.get` round-trip and can be stale during rapid tab switches. */
   private activeSessionId: string | undefined
-
   constructor(
     private readonly host: Host,
     private readonly connectionService: KiloConnectionService,
@@ -93,6 +94,18 @@ export class AgentManagerProvider implements Disposable {
       log: (...args) => this.log(...args),
       git: this.gitOps,
     })
+    this.offCreated = this.connectionService.onEventFiltered(
+      (event) => event.type === "session.created",
+      (event) =>
+        adoptSession({
+          event,
+          state: this.state,
+          panel: this.panel,
+          postMessage: (msg) => this.postToWebview(msg),
+          pushState: () => this.pushState(),
+          log: (msg, data) => this.log(msg, data),
+        }),
+    )
   }
 
   private log(...args: unknown[]) {
@@ -1877,6 +1890,7 @@ export class AgentManagerProvider implements Disposable {
   public dispose(): void {
     this.stopDiffPolling()
     this.statsPoller.stop()
+    this.offCreated()
     this.terminalManager.dispose()
     this.panel?.dispose()
     this.outputChannel.dispose()
