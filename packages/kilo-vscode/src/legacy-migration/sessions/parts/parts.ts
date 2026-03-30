@@ -1,20 +1,20 @@
 import type { KilocodeSessionImportPartData as Part } from "@kilocode/sdk/v2"
-import type { LegacyApiMessage, LegacyHistoryItem } from "./legacy-session-types"
-import { getApiConversationHistory, parseFile } from "./api-history"
-import { createMessageID, createPartID, createSessionID } from "./ids"
-import { createReasoningPart, createSimpleTextPart, createTextPartWithinMessage, createToolUsePart } from "./create-parts-builders"
+import type { LegacyApiMessage, LegacyHistoryItem } from "../legacy-session-types"
+import { getApiConversationHistory, parseFile } from "../api-history"
+import { createMessageID, createPartID, createSessionID } from "../ids"
+import { createReasoning, createSimpleText, createTextWithinMessage, createToolUse } from "./parts-builder"
 import {
-  isEnvironmentDetailsPart,
+  isCompletionResult,
+  isEnvironmentDetails,
   getReasoningText,
-  isCompletionResultPart,
-  isProviderSpecificReasoningPart,
-  isReasoningPart,
-  isSimpleTextPart,
-  isSingleTextPartWithinMessage,
+  isProviderSpecificReasoning,
+  isReasoning,
+  isSimpleText,
+  isSingleTextWithinMessage,
   isToolResult,
   isToolUse,
-} from "./create-parts-util"
-import { mergeToolUseAndResult, thereIsNoToolResult } from "./merge-tool-parts"
+} from "./parts-util"
+import { mergeToolUseAndResult, thereIsNoToolResult } from "./merge-tools"
 
 export async function createParts(id: string, dir: string, item?: LegacyHistoryItem): Promise<Array<NonNullable<Part["body"]>>> {
   const file = await getApiConversationHistory(id, dir)
@@ -34,26 +34,26 @@ function parseParts(
   const sessionID = createSessionID(id)
   const created = entry.ts ?? item?.ts ?? 0
 
-  if (isSimpleTextPart(entry)) {
+  if (isSimpleText(entry)) {
     // Ignore raw <environment_details> blocks because they are legacy prompt scaffolding,
     // not actual user-visible conversation content we want to preserve in the migrated session.
-    if (isEnvironmentDetailsPart(entry.content)) return []
-    return [createSimpleTextPart(createPartID(id, index, 0), messageID, sessionID, created, entry.content)]
+    if (isEnvironmentDetails(entry.content)) return []
+    return [createSimpleText(createPartID(id, index, 0), messageID, sessionID, created, entry.content)]
   }
 
   if (!Array.isArray(entry.content)) return []
 
   const parts: Array<NonNullable<Part["body"]>> = []
 
-  if (isReasoningPart(entry)) {
-    parts.push(createReasoningPart(createPartID(id, index, 0), messageID, sessionID, created, entry.text))
+  if (isReasoning(entry)) {
+    parts.push(createReasoning(createPartID(id, index, 0), messageID, sessionID, created, entry.text))
   }
 
   // Some providers store thinking outside normal content blocks, so this handles those provider-specific fields.
-  if (isProviderSpecificReasoningPart(entry)) {
+  if (isProviderSpecificReasoning(entry)) {
     const reasoning = getReasoningText(entry)
     if (reasoning) {
-      parts.push(createReasoningPart(createPartID(id, index, 1), messageID, sessionID, created, reasoning))
+      parts.push(createReasoning(createPartID(id, index, 1), messageID, sessionID, created, reasoning))
     }
   }
 
@@ -61,24 +61,24 @@ function parseParts(
     const partID = createPartID(id, index, partIndex)
 
     // Legacy can store a message as several pieces; this handles one text block inside that larger message.
-    if (isSingleTextPartWithinMessage(part)) {
+    if (isSingleTextWithinMessage(part)) {
       // Ignore standalone <environment_details> text blocks for the same reason: they describe
       // editor/runtime context for the old prompt, but they are not meaningful chat content.
-      if (isEnvironmentDetailsPart(part.text)) return
-      parts.push(createTextPartWithinMessage(partID, messageID, sessionID, created, part.text))
+      if (isEnvironmentDetails(part.text)) return
+      parts.push(createTextWithinMessage(partID, messageID, sessionID, created, part.text))
       return
     }
 
     // The legacy session can contain a final completion message after an assistant interaction.
     // Treat it like a regular assistant text part so the migrated session keeps that final visible answer.
-    if (isCompletionResultPart(part)) {
+    if (isCompletionResult(part)) {
       const text = part.input.result
-      parts.push(createTextPartWithinMessage(partID, messageID, sessionID, created, text))
+      parts.push(createTextWithinMessage(partID, messageID, sessionID, created, text))
       return
     }
 
     if (isToolUse(part) && thereIsNoToolResult(conversation, part.id)) {
-      parts.push(createToolUsePart(partID, messageID, sessionID, created, part))
+      parts.push(createToolUse(partID, messageID, sessionID, created, part))
       return
     }
 
@@ -90,7 +90,6 @@ function parseParts(
       parts.push(tool)
       return
     }
-
   })
 
   return parts

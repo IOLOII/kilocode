@@ -1,4 +1,4 @@
-import type { LegacyApiMessage } from "./legacy-session-types"
+import type { LegacyApiMessage } from "../legacy-session-types"
 
 type ToolUse = {
   type?: string
@@ -7,15 +7,15 @@ type ToolUse = {
   input?: unknown
 }
 
-export function isSimpleTextPart(input: LegacyApiMessage): input is LegacyApiMessage & { content: string } {
+export function isSimpleText(input: LegacyApiMessage): input is LegacyApiMessage & { content: string } {
   return typeof input.content === "string" && Boolean(input.content)
 }
 
-export function isReasoningPart(input: LegacyApiMessage): input is LegacyApiMessage & { type: "reasoning"; text: string } {
+export function isReasoning(input: LegacyApiMessage): input is LegacyApiMessage & { type: "reasoning"; text: string } {
   return input.type === "reasoning" && typeof input.text === "string" && Boolean(input.text)
 }
 
-export function isProviderSpecificReasoningPart(input: LegacyApiMessage) {
+export function isProviderSpecificReasoning(input: LegacyApiMessage) {
   return Boolean(getReasoningText(input))
 }
 
@@ -41,15 +41,15 @@ export function getReasoningText(input: LegacyApiMessage) {
   return text || undefined
 }
 
-export function isSingleTextPartWithinMessage(input: unknown): input is { type?: string; text: string } {
+export function isSingleTextWithinMessage(input: unknown): input is { type?: string; text: string } {
   return isText(input) && Boolean(input.text)
 }
 
-export function isEnvironmentDetailsPart(input: string) {
+export function isEnvironmentDetails(input: string) {
   return /^\s*<environment_details>[\s\S]*<\/environment_details>\s*$/i.test(input)
 }
 
-export function isCompletionResultPart(input: unknown): input is { type?: string; name?: string; input: { result: string } } {
+export function isCompletionResult(input: unknown): input is { type?: string; name?: string; input: { result: string } } {
   return Boolean(
     input &&
       typeof input === "object" &&
@@ -111,7 +111,7 @@ export function cleanLegacyTaskText(input: string) {
   const task = input.match(/<task>([\s\S]*?)<\/task>/i)?.[1]?.trim()
   if (task) return task
 
-  if (isEnvironmentDetailsPart(input)) return ""
+  if (isEnvironmentDetails(input)) return ""
 
   return input
 }

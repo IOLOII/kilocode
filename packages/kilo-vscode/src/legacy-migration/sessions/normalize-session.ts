@@ -6,7 +6,7 @@ import type {
   KilocodeSessionImportSessionData as Session,
 } from "@kilocode/sdk/v2"
 import { createMessages } from "./create-messages"
-import { createParts } from "./create-parts"
+import { createParts } from "./parts/parts"
 import { createProject } from "./create-project"
 import { createSession } from "./create-session"
 

@@ -1,6 +1,6 @@
 import type { KilocodeSessionImportPartData as Part } from "@kilocode/sdk/v2"
-import type { LegacyApiMessage } from "./legacy-session-types"
-import { getText, getToolUse, isToolResult, record } from "./create-parts-util"
+import type { LegacyApiMessage } from "../legacy-session-types"
+import { getText, getToolUse, isToolResult, record } from "./parts-util"
 
 type Body = NonNullable<Part["body"]>
 type Data = Body["data"]

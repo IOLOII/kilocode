@@ -1,5 +1,5 @@
 import type { KilocodeSessionImportPartData as Part } from "@kilocode/sdk/v2"
-import { cleanLegacyTaskText, record } from "./create-parts-util"
+import { cleanLegacyTaskText, record } from "./parts-util"
 
 type Body = NonNullable<Part["body"]>
 type Data = Body["data"]
@@ -8,7 +8,7 @@ type Reasoning = Extract<Data, { type: "reasoning" }>
 type Tool = Extract<Data, { type: "tool" }>
 type ToolCompleted = Extract<Tool["state"], { status: "completed" }>
 
-export function createToolUsePart(
+export function createToolUse(
   partID: string,
   messageID: string,
   sessionID: string,
@@ -44,7 +44,7 @@ export function createToolUsePart(
   }
 }
 
-export function createSimpleTextPart(
+export function createSimpleText(
   partID: string,
   messageID: string,
   sessionID: string,
@@ -70,7 +70,7 @@ export function createSimpleTextPart(
   }
 }
 
-export function createTextPartWithinMessage(
+export function createTextWithinMessage(
   partID: string,
   messageID: string,
   sessionID: string,
@@ -96,7 +96,7 @@ export function createTextPartWithinMessage(
   }
 }
 
-export function createReasoningPart(
+export function createReasoning(
   partID: string,
   messageID: string,
   sessionID: string,
