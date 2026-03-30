@@ -25,6 +25,7 @@ export function parseMessagesFromConversation(
   item?: LegacyHistoryItem,
 ): Array<NonNullable<Message["body"]>> {
   return conversation
+    .filter((entry) => entry.role === "user" || entry.role === "assistant")
     .map((entry, index) => parseMessage(entry, index, id, item))
     .filter((message): message is NonNullable<Message["body"]> => Boolean(message))
 }

@@ -71,4 +71,36 @@ describe("legacy migration messages", () => {
     expect(list).toHaveLength(2)
     expect(list.some((x) => x.data.role !== "user" && x.data.role !== "assistant")).toBe(false)
   })
+
+  it("keeps assistant parentID pointing to the previous imported message when skipped entries exist", () => {
+    const list = parseMessagesFromConversation(
+      [
+        {
+          role: "user",
+          content: "hello",
+          ts: 1,
+        },
+        {
+          role: "system",
+          content: "ignored",
+          ts: 2,
+        } as unknown as LegacyApiMessage,
+        {
+          role: "assistant",
+          content: "hi",
+          ts: 3,
+        },
+      ],
+      id,
+      item,
+    )
+
+    const user = list[0]
+    const assistant = list[1]
+
+    expect(user?.id).toBeDefined()
+    expect(assistant?.data.role).toBe("assistant")
+    if (assistant?.data.role !== "assistant") throw new Error("assistant message not found")
+    expect(assistant.data.parentID).toBe(user?.id)
+  })
 })
