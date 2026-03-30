@@ -28,7 +28,7 @@ describe("legacy migration session", () => {
     const b = createSession("legacy-task-1", undefined, "project-1")
 
     expect(a.id).toBe(b.id)
-    expect(a.id.startsWith("ses_")).toBe(true)
+    expect(a.id.startsWith("ses_migrated_")).toBe(true)
   })
 
   it("falls back to the legacy id as title when task metadata is missing", () => {

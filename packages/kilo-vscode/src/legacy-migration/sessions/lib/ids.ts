@@ -21,7 +21,7 @@ export function createExtraPartID(id: string, index: number, kind: string) {
 }
 
 function prefixed(prefix: string, value: string) {
-  return `${prefix}_${hash(value).slice(0, 26)}`
+  return `${prefix}_migrated_${hash(value).slice(0, 26)}`
 }
 
 function hash(value: string) {
