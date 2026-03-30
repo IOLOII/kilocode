@@ -38,6 +38,7 @@ import { getWorkspaceRoot } from "./review-utils"
 import { MarketplaceService } from "./services/marketplace"
 import { resolveProjectDirectory } from "./project-directory"
 import { getBusySessionCount, seedSessionStatuses } from "./session-status"
+import { retry } from "./services/cli-backend/retry"
 import { slimPart, slimParts } from "./kilo-provider/slim-metadata"
 // legacy-migration start
 import {
@@ -2084,18 +2085,20 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
         this.connectionService.recordMessageSessionId(messageID, resolved!.sid)
       }
 
-      await this.client.session.promptAsync(
-        {
-          sessionID: resolved!.sid,
-          directory: resolved!.dir,
-          messageID,
-          parts,
-          model: providerID && modelID ? { providerID, modelID } : undefined,
-          agent,
-          variant,
-          editorContext,
-        },
-        { throwOnError: true },
+      await retry(() =>
+        this.client!.session.promptAsync(
+          {
+            sessionID: resolved!.sid,
+            directory: resolved!.dir,
+            messageID,
+            parts,
+            model: providerID && modelID ? { providerID, modelID } : undefined,
+            agent,
+            variant,
+            editorContext,
+          },
+          { throwOnError: true },
+        ),
       )
     } catch (error) {
       console.error("[Kilo New] KiloProvider: Failed to send message:", error)
@@ -2143,19 +2146,21 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
 
       const parts = files?.map((f) => ({ type: "file" as const, mime: f.mime, url: f.url }))
 
-      await this.client.session.command(
-        {
-          sessionID: resolved!.sid,
-          directory: resolved!.dir,
-          command,
-          arguments: args,
-          messageID,
-          model: providerID && modelID ? `${providerID}/${modelID}` : undefined,
-          agent,
-          variant,
-          parts,
-        },
-        { throwOnError: true },
+      await retry(() =>
+        this.client!.session.command(
+          {
+            sessionID: resolved!.sid,
+            directory: resolved!.dir,
+            command,
+            arguments: args,
+            messageID,
+            model: providerID && modelID ? `${providerID}/${modelID}` : undefined,
+            agent,
+            variant,
+            parts,
+          },
+          { throwOnError: true },
+        ),
       )
     } catch (error) {
       console.error("[Kilo New] KiloProvider: Failed to send command:", error)
