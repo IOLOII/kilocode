@@ -26,10 +26,6 @@ export const KiloNotifications: Component = () => {
     if (index() > max) setIndex(max)
   })
 
-  const handleAction = (url: string) => {
-    vscode.postMessage({ type: "openExternal", url })
-  }
-
   const isLast = () => safeIndex() === total() - 1
 
   const handleNext = () => {
@@ -68,7 +64,7 @@ export const KiloNotifications: Component = () => {
     vscode.postMessage({
       type: "telemetry",
       event: TelemetryEventName.NOTIFICATION_CLICKED,
-      properties: { actionText: "Try model", suggestModelId: current()?.suggestModelId },
+      properties: { actionText: "Try Auto Free", suggestModelId: current()?.suggestModelId },
     })
   }
 
@@ -91,13 +87,7 @@ export const KiloNotifications: Component = () => {
                 {language.t("notifications.action.tryModel")}
               </button>
             </Show>
-            <Show when={current()?.action}>
-              {(action) => (
-                <button class="kilo-notifications-action-btn" onClick={() => handleAction(action().actionURL)}>
-                  {action().actionText}
-                </button>
-              )}
-            </Show>
+
             <div class="kilo-notifications-next-group">
               <Show when={safeIndex() > 0}>
                 <button class="kilo-notifications-back-link" onClick={() => setIndex(safeIndex() - 1)}>
