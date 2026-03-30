@@ -10,7 +10,18 @@ type Internals = {
   currentSession: Session | null
   pendingFollowup: { dir: string; time: number } | null
   handleLoadMessages: (sessionID: string) => Promise<void>
-  handleEvent: (event: Event) => void
+  initializeConnection: () => Promise<void>
+  syncWebviewState: () => Promise<void>
+  flushPendingSessionRefresh: () => Promise<void>
+  fetchAndSendProviders: () => Promise<void>
+  fetchAndSendAgents: () => Promise<void>
+  fetchAndSendSkills: () => Promise<void>
+  fetchAndSendCommands: () => Promise<void>
+  fetchAndSendConfig: () => Promise<void>
+  fetchAndSendNotifications: () => Promise<void>
+  seedSessionStatusMap: () => Promise<void>
+  sendNotificationSettings: () => void
+  startStatsPolling: () => void
 }
 
 function created(input: { id: string; directory: string }): Event {
@@ -31,10 +42,22 @@ function created(input: { id: string; directory: string }): Event {
 }
 
 function connection() {
+  let filter: ((event: Event) => boolean) | undefined
+  let listener: ((event: Event) => void) | undefined
+
   return {
+    emit(event: Event) {
+      if (!filter || !listener) throw new Error("expected SSE subscription")
+      if (!filter(event)) return
+      listener(event)
+    },
     connect: async () => {},
     getClient: () => ({}) as never,
-    onEventFiltered: () => () => undefined,
+    onEventFiltered: (next: (event: Event) => boolean, cb: (event: Event) => void) => {
+      filter = next
+      listener = cb
+      return () => undefined
+    },
     onStateChange: () => () => undefined,
     onNotificationDismissed: () => () => undefined,
     onLanguageChanged: () => () => undefined,
@@ -50,7 +73,8 @@ function connection() {
 
 describe("KiloProvider follow-up sessions", () => {
   it("adopts pending follow-up sessions for single-session views", async () => {
-    const provider = new KiloProvider({} as never, connection() as never)
+    const service = connection()
+    const provider = new KiloProvider({} as never, service as never)
     const internal = provider as unknown as Internals
     const sent: unknown[] = []
     const loaded: string[] = []
@@ -61,12 +85,27 @@ describe("KiloProvider follow-up sessions", () => {
         return true
       },
     }
+    internal.syncWebviewState = async () => {}
+    internal.flushPendingSessionRefresh = async () => {}
+    internal.fetchAndSendProviders = async () => {}
+    internal.fetchAndSendAgents = async () => {}
+    internal.fetchAndSendSkills = async () => {}
+    internal.fetchAndSendCommands = async () => {}
+    internal.fetchAndSendConfig = async () => {}
+    internal.fetchAndSendNotifications = async () => {}
+    internal.seedSessionStatusMap = async () => {}
+    internal.sendNotificationSettings = () => {}
+    internal.startStatsPolling = () => {}
+
+    await internal.initializeConnection()
+    sent.length = 0
+
     internal.pendingFollowup = { dir: "/repo", time: Date.now() }
     internal.handleLoadMessages = async (sessionID: string) => {
       loaded.push(sessionID)
     }
 
-    internal.handleEvent(created({ id: "ses-followup", directory: "/repo" }))
+    service.emit(created({ id: "ses-followup", directory: "/repo" }))
     await Promise.resolve()
 
     expect(internal.currentSession?.id).toBe("ses-followup")
@@ -88,7 +127,8 @@ describe("KiloProvider follow-up sessions", () => {
   })
 
   it("does not adopt pending follow-up sessions in agent manager panels", async () => {
-    const provider = new KiloProvider({} as never, connection() as never, undefined, {
+    const service = connection()
+    const provider = new KiloProvider({} as never, service as never, undefined, {
       adoptFollowupSessions: false,
     })
     const internal = provider as unknown as Internals
@@ -100,10 +140,25 @@ describe("KiloProvider follow-up sessions", () => {
         return true
       },
     }
+    internal.syncWebviewState = async () => {}
+    internal.flushPendingSessionRefresh = async () => {}
+    internal.fetchAndSendProviders = async () => {}
+    internal.fetchAndSendAgents = async () => {}
+    internal.fetchAndSendSkills = async () => {}
+    internal.fetchAndSendCommands = async () => {}
+    internal.fetchAndSendConfig = async () => {}
+    internal.fetchAndSendNotifications = async () => {}
+    internal.seedSessionStatusMap = async () => {}
+    internal.sendNotificationSettings = () => {}
+    internal.startStatsPolling = () => {}
+
+    await internal.initializeConnection()
+    sent.length = 0
+
     internal.pendingFollowup = { dir: "/repo", time: Date.now() }
     internal.handleLoadMessages = async () => {}
 
-    internal.handleEvent(created({ id: "ses-followup", directory: "/repo" }))
+    service.emit(created({ id: "ses-followup", directory: "/repo" }))
     await Promise.resolve()
 
     expect(internal.currentSession).toBeNull()

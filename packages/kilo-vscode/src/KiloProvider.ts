@@ -974,6 +974,10 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
             return event.type !== "message.part.updated" && event.type !== "message.part.delta"
           }
 
+          if (event.type === "session.created" && this.matchesPendingFollowup(event.properties.info)) {
+            return true
+          }
+
           // session.status must always pass through — even for sessions not tracked by this
           // KiloProvider instance. The Settings panel is a separate provider with no tracked
           // sessions, but it needs session.status to populate sessionStatusMap and allStatusMap
@@ -2784,11 +2788,16 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.pendingFollowup = recordFollowup({ answers, dir, now: Date.now() }) ?? null
   }
 
+  private matchesPendingFollowup(session: Session) {
+    if (!this.adoptFollowupSessions) return false
+    return matchFollowup({ pending: this.pendingFollowup, dir: session.directory, now: Date.now() })
+  }
+
   private adoptPendingFollowup(session: Session) {
     if (!this.adoptFollowupSessions) return false
 
     const now = Date.now()
-    const match = matchFollowup({ pending: this.pendingFollowup, dir: session.directory, now })
+    const match = this.matchesPendingFollowup(session)
     if (!match) {
       if (
         this.pendingFollowup &&
