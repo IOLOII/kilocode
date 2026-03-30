@@ -15,6 +15,7 @@ import type { AgentInfo, SkillInfo } from "../../types/messages"
 import ModeEditView from "./ModeEditView"
 import ModeCreateView from "./ModeCreateView"
 import McpEditView from "./McpEditView"
+import McpAddView from "./McpAddView"
 import WorkflowsTab from "./agent-behaviour/WorkflowsTab"
 import { parseImport, MAX_IMPORT_SIZE } from "./mode-io"
 import type { ImportError } from "./mode-io"
@@ -60,6 +61,7 @@ const AgentBehaviourTab: Component = () => {
 
   // MCP view state
   const [editingMcp, setEditingMcp] = createSignal<string>("")
+  const [mcpAdding, setMcpAdding] = createSignal(false)
 
   // Fetch skills whenever the skills subtab becomes active
   createEffect(() => {
@@ -504,6 +506,10 @@ const AgentBehaviourTab: Component = () => {
 
     const isConnected = (name: string) => session.mcpStatus()[name]?.status === "connected"
 
+    if (mcpAdding()) {
+      return <McpAddView taken={Object.keys(config().mcp ?? {})} onBack={() => setMcpAdding(false)} />
+    }
+
     if (editingMcp()) {
       return (
         <McpEditView
@@ -519,6 +525,13 @@ const AgentBehaviourTab: Component = () => {
 
     return (
       <div>
+        {/* Add button */}
+        <div style={{ display: "flex", "justify-content": "flex-end", "margin-bottom": "8px" }}>
+          <Button variant="secondary" size="small" onClick={() => setMcpAdding(true)}>
+            {language.t("settings.agentBehaviour.addMcp")}
+          </Button>
+        </div>
+
         <Show
           when={mcpEntries().length > 0}
           fallback={
@@ -997,6 +1010,7 @@ const AgentBehaviourTab: Component = () => {
                   setEditingAgent("")
                 }
                 setEditingMcp("")
+                setMcpAdding(false)
               }}
               style={{
                 padding: "8px 16px",
