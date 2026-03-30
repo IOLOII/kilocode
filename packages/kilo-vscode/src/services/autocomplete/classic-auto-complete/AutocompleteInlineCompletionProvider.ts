@@ -499,10 +499,18 @@ export class AutocompleteInlineCompletionProvider implements vscode.InlineComple
       return coveringRequest.promise
     }
 
-    // If this is the first call (no pending debounce), execute immediately
+    // If this is the first call (no pending debounce), execute immediately (leading edge).
+    // Register as a PendingRequest so concurrent calls coalesce onto this one instead of
+    // firing a second HTTP request before this one completes.
     if (this.isFirstCall && this.debounceTimer === null) {
       this.isFirstCall = false
-      return this.fetchAndCacheSuggestion(prompt, prefix, suffix, languageId)
+      const pending: PendingRequest = { prefix, suffix, promise: null! }
+      const promise = this.fetchAndCacheSuggestion(prompt, prefix, suffix, languageId).finally(() => {
+        this.removePendingRequest(pending)
+      })
+      pending.promise = promise
+      this.pendingRequests.push(pending)
+      return promise
     }
 
     // Clear any existing timer (reset the debounce)
