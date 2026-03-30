@@ -1,6 +1,6 @@
 import * as path from "node:path"
 import * as vscode from "vscode"
-import type { LegacyApiMessage } from "./legacy-session-types"
+import type { LegacyApiMessage } from "./legacy-types"
 
 export async function getApiConversationHistory(id: string, dir: string) {
   const file = path.join(dir, id, "api_conversation_history.json")

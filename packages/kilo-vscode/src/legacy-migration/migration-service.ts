@@ -32,8 +32,8 @@ import type {
   MigrationCustomModeInfo,
   MigrationResultItem,
 } from "./legacy-types"
-import { createSessionID } from "./sessions/ids"
-import { migrateSession } from "./sessions/migrate-session"
+import { createSessionID } from "./sessions/lib/ids"
+import { migrate as migrateSession } from "./sessions/migrate"
 
 // ---------------------------------------------------------------------------
 // Constants

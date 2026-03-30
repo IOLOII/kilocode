@@ -1,5 +1,5 @@
 import type { KilocodeSessionImportMessageData as Message } from "@kilocode/sdk/v2"
-import type { LegacyApiMessage, LegacyHistoryItem } from "./legacy-session-types"
+import type { LegacyApiMessage, LegacyHistoryItem } from "./legacy-types"
 import { getApiConversationHistory, parseFile } from "./api-history"
 import { createMessageID, createSessionID } from "./ids"
 

@@ -1,5 +1,5 @@
 import type { KilocodeSessionImportPartData as Part } from "@kilocode/sdk/v2"
-import type { LegacyApiMessage, LegacyHistoryItem } from "../legacy-session-types"
+import type { LegacyApiMessage, LegacyHistoryItem } from "../legacy-types"
 import { getApiConversationHistory, parseFile } from "../api-history"
 import { createMessageID, createPartID, createSessionID } from "../ids"
 import { createReasoning, createSimpleText, createTextWithinMessage, createToolUse } from "./parts-builder"

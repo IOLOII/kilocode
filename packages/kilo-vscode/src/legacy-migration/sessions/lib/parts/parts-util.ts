@@ -1,4 +1,4 @@
-import type { LegacyApiMessage } from "../legacy-session-types"
+import type { LegacyApiMessage } from "../legacy-types"
 
 type ToolUse = {
   type?: string

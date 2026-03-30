@@ -1,13 +1,13 @@
 import * as vscode from "vscode"
 import type { KiloClient } from "@kilocode/sdk/v2/client"
-import type { LegacyHistoryItem } from "./legacy-session-types"
-import { normalizeSession } from "./normalize-session"
+import type { LegacyHistoryItem } from "./lib/legacy-types"
+import { parseSession } from "./parser"
 
-export async function migrateSession(id: string, context: vscode.ExtensionContext, client: KiloClient) {
+export async function migrate(id: string, context: vscode.ExtensionContext, client: KiloClient) {
   const dir = vscode.Uri.joinPath(context.globalStorageUri, "tasks").fsPath
   const items = context.globalState.get<LegacyHistoryItem[]>("taskHistory", [])
   const item = items.find((item) => item.id === id)
-  const payload = await normalizeSession(id, dir, item)
+  const payload = await parseSession(id, dir, item)
 
   try {
     const project = await client.kilocode.sessionImport.project(payload.project, { throwOnError: true })
