@@ -360,6 +360,10 @@ export class AgentManagerProvider implements Disposable {
       void this.onApplyWorktreeDiff(m.worktreeId, selectedFiles)
       return null
     }
+    if (m.type === "agentManager.copyDiff") {
+      void this.onCopyDiff(m.worktreeId)
+      return null
+    }
     if (m.type === "agentManager.startDiffWatch") {
       this.startDiffPolling(m.sessionId)
       return null
@@ -1801,6 +1805,13 @@ export class AgentManagerProvider implements Disposable {
     this.diffSessionId = undefined
     this.lastDiffHash = undefined
     this.cachedDiffTarget = undefined
+  }
+
+  private async onCopyDiff(id: string): Promise<void> {
+    const wt = this.getStateManager()?.getWorktree(id)
+    if (!wt) return
+    const diff = await this.gitOps.buildUnifiedDiff(wt.path, remoteRef(wt)).catch(() => "")
+    await this.host.copyToClipboard(diff || "No changes")
   }
 
   private postToWebview(message: AgentManagerOutMessage): void {
