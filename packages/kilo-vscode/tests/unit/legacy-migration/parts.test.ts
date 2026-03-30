@@ -105,4 +105,30 @@ describe("legacy migration parts", () => {
 
     expect(list).toEqual([])
   })
+
+  it("uses non-colliding ids for reasoning and normal content parts in the same message", () => {
+    const list = parsePartsFromConversation(
+      [
+        {
+          role: "assistant",
+          type: "reasoning",
+          text: "Think first",
+          content: [
+            {
+              type: "text",
+              text: "Visible answer",
+            },
+          ],
+          ts: 1774861015000,
+        } as unknown as LegacyApiMessage,
+      ],
+      id,
+      item,
+    )
+
+    const ids = list.map((x) => x.id)
+
+    expect(ids).toHaveLength(2)
+    expect(new Set(ids).size).toBe(2)
+  })
 })

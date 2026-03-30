@@ -1,7 +1,7 @@
 import type { KilocodeSessionImportPartData as Part } from "@kilocode/sdk/v2"
 import type { LegacyApiMessage, LegacyHistoryItem } from "../legacy-types"
 import { getApiConversationHistory, parseFile } from "../legacy-conversation"
-import { createMessageID, createPartID, createSessionID } from "../ids"
+import { createExtraPartID, createMessageID, createPartID, createSessionID } from "../ids"
 import { toReasoning, toText, toTextWithinMessage, toTool } from "./parts-builder"
 import {
   isCompletionResult,
@@ -61,14 +61,14 @@ function parseParts(
   const parts: Array<NonNullable<Part["body"]>> = []
 
   if (isReasoning(entry)) {
-    parts.push(toReasoning(createPartID(id, index, 0), messageID, sessionID, created, entry.text))
+    parts.push(toReasoning(createExtraPartID(id, index, "reasoning"), messageID, sessionID, created, entry.text))
   }
 
   // Some providers store thinking outside normal content blocks, so this handles those provider-specific fields.
   if (isProviderSpecificReasoning(entry)) {
     const reasoning = getReasoningText(entry)
     if (reasoning) {
-      parts.push(toReasoning(createPartID(id, index, 1), messageID, sessionID, created, reasoning))
+      parts.push(toReasoning(createExtraPartID(id, index, "provider-reasoning"), messageID, sessionID, created, reasoning))
     }
   }
 

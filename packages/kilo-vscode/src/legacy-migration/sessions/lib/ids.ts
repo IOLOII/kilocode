@@ -16,6 +16,10 @@ export function createPartID(id: string, index: number, part: number) {
   return prefixed("prt", `${id}:${index}:${part}`)
 }
 
+export function createExtraPartID(id: string, index: number, kind: string) {
+  return prefixed("prt", `${id}:${index}:${kind}`)
+}
+
 function prefixed(prefix: string, value: string) {
   return `${prefix}_${hash(value).slice(0, 26)}`
 }
