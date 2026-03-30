@@ -39,6 +39,7 @@ import { MarketplaceService } from "./services/marketplace"
 import { resolveProjectDirectory } from "./project-directory"
 import { getBusySessionCount, seedSessionStatuses } from "./session-status"
 import { slimPart, slimParts } from "./kilo-provider/slim-metadata"
+import { matchFollowup, recordFollowup, type Followup } from "./kilo-provider/followup-session"
 // legacy-migration start
 import {
   checkAndShowMigrationWizard,
@@ -85,6 +86,7 @@ import { fetchOpenAIModels, FetchModelsError } from "./shared/fetch-models"
 type KiloProviderOptions = {
   projectDirectory?: string | null
   slimEditMetadata?: boolean
+  adoptFollowupSessions?: boolean
 }
 
 export class KiloProvider implements vscode.WebviewViewProvider, TelemetryPropertiesProvider {
@@ -154,6 +156,8 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private chatAutocomplete: ChatTextAreaAutocomplete | null = null
   private projectDirectory: string | null | undefined
   private slimEditMetadata = true
+  private adoptFollowupSessions = true
+  private pendingFollowup: Followup | null = null
   /** Worktree diff stats poller for the sidebar badge — reuses GitStatsPoller (local stats only) */
   private statsPoller: GitStatsPoller | null = null
   private cachedStats: unknown = null
@@ -175,6 +179,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   ) {
     this.projectDirectory = options?.projectDirectory
     this.slimEditMetadata = options?.slimEditMetadata ?? true
+    this.adoptFollowupSessions = options?.adoptFollowupSessions ?? true
     TelemetryProxy.getInstance().setProvider(this)
   }
 
@@ -668,9 +673,13 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
           break
 
         case "questionReply":
-          await handleQuestionReply(this.questionCtx, message.requestID, message.answers, message.sessionID)
+          this.noteFollowup(message.answers, message.sessionID)
+          if (!(await handleQuestionReply(this.questionCtx, message.requestID, message.answers, message.sessionID))) {
+            this.pendingFollowup = null
+          }
           break
         case "questionReject":
+          this.pendingFollowup = null
           await handleQuestionReject(this.questionCtx, message.requestID, message.sessionID)
           break
         case "requestConfig":
@@ -2507,6 +2516,10 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     }
 
     // Extract sessionID from the event
+    if (event.type === "session.created" && this.adoptPendingFollowup(event.properties.info)) {
+      return
+    }
+
     const sessionID = this.connectionService.resolveEventSessionId(event)
 
     // Events without sessionID (server.connected, server.heartbeat) → always forward
@@ -2763,6 +2776,34 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
       return
     }
     this.sessionDirectories.set(sessionId, dir)
+  }
+
+  private noteFollowup(answers: string[][], sessionID?: string) {
+    if (!this.adoptFollowupSessions) return
+    const dir = this.getWorkspaceDirectory(sessionID)
+    this.pendingFollowup = recordFollowup({ answers, dir, now: Date.now() }) ?? null
+  }
+
+  private adoptPendingFollowup(session: Session) {
+    if (!this.adoptFollowupSessions) return false
+
+    const now = Date.now()
+    const match = matchFollowup({ pending: this.pendingFollowup, dir: session.directory, now })
+    if (!match) {
+      if (
+        this.pendingFollowup &&
+        !matchFollowup({ pending: this.pendingFollowup, dir: this.pendingFollowup.dir, now })
+      ) {
+        this.pendingFollowup = null
+      }
+      return false
+    }
+
+    this.pendingFollowup = null
+    this.trackDirectory(session.id, session.directory)
+    this.registerSession(session)
+    void this.handleLoadMessages(session.id)
+    return true
   }
 
   private getProjectDirectory(sessionId?: string): string | undefined {

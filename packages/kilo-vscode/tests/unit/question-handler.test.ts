@@ -15,7 +15,7 @@ describe("question handlers", () => {
       },
     } as unknown as KiloClient
 
-    await handleQuestionReply(
+    const ok = await handleQuestionReply(
       {
         client,
         currentSessionId: "ses-root",
@@ -29,6 +29,7 @@ describe("question handlers", () => {
       "ses-worktree",
     )
 
+    expect(ok).toBe(true)
     expect(calls).toEqual([
       {
         requestID: "req-1",
@@ -50,7 +51,7 @@ describe("question handlers", () => {
       },
     } as unknown as KiloClient
 
-    await handleQuestionReply(
+    const ok = await handleQuestionReply(
       {
         client,
         currentSessionId: "ses-root",
@@ -63,6 +64,7 @@ describe("question handlers", () => {
       [["Continue here"]],
     )
 
+    expect(ok).toBe(true)
     expect(calls[0]?.directory).toBe("/repo/ses-root")
   })
 
@@ -78,7 +80,7 @@ describe("question handlers", () => {
       },
     } as unknown as KiloClient
 
-    await handleQuestionReject(
+    const ok = await handleQuestionReject(
       {
         client,
         currentSessionId: "ses-root",
@@ -91,6 +93,7 @@ describe("question handlers", () => {
       "ses-worktree",
     )
 
+    expect(ok).toBe(true)
     expect(calls).toEqual([
       {
         requestID: "req-3",
