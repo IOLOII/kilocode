@@ -21,25 +21,22 @@ function created(input: { id: string; parentID?: string; directory: string }): E
 }
 
 describe("adoptSession", () => {
-  it("adopts a backend-created child session into the parent worktree", () => {
+  it("adopts a backend-created worktree session with normalized paths", () => {
     const added: Array<[string, string | null]> = []
     const directories: Array<[string, string]> = []
     const tracked: string[] = []
     const registered: string[] = []
-    const posts: Array<Record<string, unknown>> = []
+    const posts: unknown[] = []
     const logs: Array<[string, Record<string, unknown> | undefined]> = []
 
     adoptSession({
-      event: created({ id: "ses-child", parentID: "ses-parent", directory: "/repo/.kilo/worktrees/feature" }),
+      event: created({ id: "ses-child", directory: "C:\\Repo\\.kilo\\worktrees\\feature\\" }),
       state: {
         getSession(id) {
-          if (id === "ses-child") return undefined
-          if (id === "ses-parent") return { worktreeId: "wt-1" }
           return undefined
         },
-        getWorktree(id) {
-          if (id !== "wt-1") return undefined
-          return { id, path: "/repo/.kilo/worktrees/feature" }
+        getWorktrees() {
+          return [{ id: "wt-1", path: "c:/repo/.kilo/worktrees/feature" }]
         },
         addSession(sessionId, worktreeId) {
           added.push([sessionId, worktreeId])
@@ -59,7 +56,7 @@ describe("adoptSession", () => {
         },
       },
       postMessage(msg) {
-        posts.push(msg as Record<string, unknown>)
+        posts.push(msg)
       },
       pushState() {},
       log(msg, data) {
@@ -68,7 +65,7 @@ describe("adoptSession", () => {
     })
 
     expect(added).toEqual([["ses-child", "wt-1"]])
-    expect(directories).toEqual([["ses-child", "/repo/.kilo/worktrees/feature"]])
+    expect(directories).toEqual([["ses-child", "c:/repo/.kilo/worktrees/feature"]])
     expect(tracked).toEqual(["ses-child"])
     expect(registered).toEqual(["ses-child"])
     expect(posts).toEqual([
@@ -81,19 +78,21 @@ describe("adoptSession", () => {
     expect(logs[0]?.[0]).toBe("Adopted backend-created worktree session")
   })
 
-  it("ignores child sessions when the created directory does not match the parent worktree", () => {
+  it("ignores child sessions when the parent belongs to another worktree", () => {
     const added: string[] = []
 
     adoptSession({
-      event: created({ id: "ses-child", parentID: "ses-parent", directory: "/repo" }),
+      event: created({ id: "ses-child", parentID: "ses-parent", directory: "/repo/.kilo/worktrees/feature" }),
       state: {
         getSession(id) {
-          if (id === "ses-parent") return { worktreeId: "wt-1" }
+          if (id === "ses-parent") return { worktreeId: "wt-2" }
           return undefined
         },
-        getWorktree(id) {
-          if (id !== "wt-1") return undefined
-          return { id, path: "/repo/.kilo/worktrees/feature" }
+        getWorktrees() {
+          return [
+            { id: "wt-1", path: "/repo/.kilo/worktrees/feature" },
+            { id: "wt-2", path: "/repo/.kilo/worktrees/other" },
+          ]
         },
         addSession(sessionId) {
           added.push(sessionId)

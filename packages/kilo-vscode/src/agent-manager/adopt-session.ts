@@ -1,10 +1,10 @@
 import type { Event, Session } from "@kilocode/sdk/v2/client"
-import path from "path"
+import { normalizePath } from "./git-import"
 import type { AgentManagerOutMessage } from "./types"
 
 interface State {
   getSession(id: string): { worktreeId: string | null } | undefined
-  getWorktree(id: string): { id: string; path: string } | undefined
+  getWorktrees(): Array<{ id: string; path: string }>
   addSession(sessionId: string, worktreeId: string | null): void
 }
 
@@ -28,15 +28,14 @@ export function adoptSession(input: {
   if (!input.state || !input.panel) return
 
   const info = input.event.properties.info
-  if (!info.parentID) return
   if (input.state.getSession(info.id)) return
 
-  const parent = input.state.getSession(info.parentID)
-  if (!parent?.worktreeId) return
-
-  const wt = input.state.getWorktree(parent.worktreeId)
+  const target = normalizePath(info.directory)
+  const wt = input.state.getWorktrees().find((item) => normalizePath(item.path) === target)
   if (!wt) return
-  if (path.resolve(wt.path) !== path.resolve(info.directory)) return
+
+  const parent = info.parentID ? input.state.getSession(info.parentID) : undefined
+  if (parent?.worktreeId && parent.worktreeId !== wt.id) return
 
   input.state.addSession(info.id, wt.id)
   input.panel.sessions.setSessionDirectory(info.id, wt.path)

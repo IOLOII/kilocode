@@ -287,9 +287,7 @@ export namespace PlanFollowup {
     await Instance.provide({
       directory: session.directory,
       fn: async () => {
-        const next = await Session.create({
-          parentID: input.sessionID,
-        })
+        const next = await Session.create({})
         await inject({
           sessionID: next.id,
           agent: "code",

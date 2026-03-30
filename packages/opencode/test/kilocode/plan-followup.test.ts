@@ -445,8 +445,10 @@ describe("plan follow-up", () => {
       expect(_mocks.llmSpy).toHaveBeenCalledTimes(1)
 
       const newSessionID = created[0]
-      expect(added[0].id).toBe(newSessionID)
-      expect(added[0].parentID).toBe(seeded.sessionID)
+      const next = added[0]
+      if (!newSessionID || !next) throw new Error("expected follow-up session")
+      expect(next.id).toBe(newSessionID)
+      expect(next.parentID).toBeUndefined()
       const messages = await Session.messages({ sessionID: newSessionID })
       const user = messages.find((item) => item.info.role === "user")
       expect(user?.info.role).toBe("user")
@@ -520,11 +522,12 @@ describe("plan follow-up", () => {
       const prev = new Set(before.map((item) => item.id))
       const added = after.filter((item) => !prev.has(item.id))
       expect(added).toHaveLength(1)
-      expect(added[0]?.directory).toBe(dir)
-      expect(added[0]?.parentID).toBe(seeded.sessionID)
+      const next = added[0]
+      expect(next?.directory).toBe(dir)
+      expect(next?.parentID).toBeUndefined()
 
-      if (added[0]) {
-        SessionPrompt.cancel(added[0].id)
+      if (next) {
+        SessionPrompt.cancel(next.id)
       }
     }))
 
@@ -724,7 +727,9 @@ describe("plan follow-up", () => {
       await expect(pending).resolves.toBe("break")
       unsub()
 
-      const messages = await Session.messages({ sessionID: created[0] })
+      const newSessionID = created[0]
+      if (!newSessionID) throw new Error("expected follow-up session")
+      const messages = await Session.messages({ sessionID: newSessionID })
       const user = messages.find((item) => item.info.role === "user")
       if (!user || user.info.role !== "user") throw new Error("expected user message")
       const part = user.parts.find((item) => item.type === "text")
@@ -733,7 +738,7 @@ describe("plan follow-up", () => {
       expect(part.text).not.toContain("## Handover from Planning Session")
       expect(part.text).not.toContain("## Todo List")
 
-      SessionPrompt.cancel(created[0])
+      SessionPrompt.cancel(newSessionID)
     }))
 
   test("ask - returns break when assistant text is empty", () =>
