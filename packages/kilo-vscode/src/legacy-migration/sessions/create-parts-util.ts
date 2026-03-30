@@ -45,6 +45,10 @@ export function isSingleTextPartWithinMessage(input: unknown): input is { type?:
   return isText(input) && Boolean(input.text)
 }
 
+export function isEnvironmentDetailsPart(input: string) {
+  return /^\s*<environment_details>[\s\S]*<\/environment_details>\s*$/i.test(input)
+}
+
 export function isCompletionResultPart(input: unknown): input is { type?: string; name?: string; input: { result: string } } {
   return Boolean(
     input &&
@@ -106,6 +110,8 @@ export function cleanLegacyTaskText(input: string) {
   // just that inner text and drop the wrapper plus the extra environment block.
   const task = input.match(/<task>([\s\S]*?)<\/task>/i)?.[1]?.trim()
   if (task) return task
+
+  if (isEnvironmentDetailsPart(input)) return ""
 
   return input
 }

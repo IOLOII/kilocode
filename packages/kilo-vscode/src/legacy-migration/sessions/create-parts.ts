@@ -4,6 +4,7 @@ import { getApiConversationHistory, parseFile } from "./api-history"
 import { createMessageID, createPartID, createSessionID } from "./ids"
 import { createReasoningPart, createSimpleTextPart, createTextPartWithinMessage, createToolUsePart } from "./create-parts-builders"
 import {
+  isEnvironmentDetailsPart,
   getReasoningText,
   isCompletionResultPart,
   isProviderSpecificReasoningPart,
@@ -34,6 +35,9 @@ function parseParts(
   const created = entry.ts ?? item?.ts ?? 0
 
   if (isSimpleTextPart(entry)) {
+    // Ignore raw <environment_details> blocks because they are legacy prompt scaffolding,
+    // not actual user-visible conversation content we want to preserve in the migrated session.
+    if (isEnvironmentDetailsPart(entry.content)) return []
     return [createSimpleTextPart(createPartID(id, index, 0), messageID, sessionID, created, entry.content)]
   }
 
@@ -58,6 +62,9 @@ function parseParts(
 
     // Legacy can store a message as several pieces; this handles one text block inside that larger message.
     if (isSingleTextPartWithinMessage(part)) {
+      // Ignore standalone <environment_details> text blocks for the same reason: they describe
+      // editor/runtime context for the old prompt, but they are not meaningful chat content.
+      if (isEnvironmentDetailsPart(part.text)) return
       parts.push(createTextPartWithinMessage(partID, messageID, sessionID, created, part.text))
       return
     }
