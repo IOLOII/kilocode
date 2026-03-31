@@ -86,7 +86,6 @@ import { fetchOpenAIModels, FetchModelsError } from "./shared/fetch-models"
 type KiloProviderOptions = {
   projectDirectory?: string | null
   slimEditMetadata?: boolean
-  adoptFollowupSessions?: boolean
 }
 
 export class KiloProvider implements vscode.WebviewViewProvider, TelemetryPropertiesProvider {
@@ -156,7 +155,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private chatAutocomplete: ChatTextAreaAutocomplete | null = null
   private projectDirectory: string | null | undefined
   private slimEditMetadata = true
-  private adoptFollowupSessions = true
+
   private pendingFollowup: Followup | null = null
   /** Worktree diff stats poller for the sidebar badge — reuses GitStatsPoller (local stats only) */
   private statsPoller: GitStatsPoller | null = null
@@ -179,7 +178,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   ) {
     this.projectDirectory = options?.projectDirectory
     this.slimEditMetadata = options?.slimEditMetadata ?? true
-    this.adoptFollowupSessions = options?.adoptFollowupSessions ?? true
+
     TelemetryProxy.getInstance().setProvider(this)
   }
 
@@ -2783,19 +2782,15 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   }
 
   private noteFollowup(answers: string[][], sessionID?: string) {
-    if (!this.adoptFollowupSessions) return
     const dir = this.getWorkspaceDirectory(sessionID)
     this.pendingFollowup = recordFollowup({ answers, dir, now: Date.now() }) ?? null
   }
 
   private matchesPendingFollowup(session: Session) {
-    if (!this.adoptFollowupSessions) return false
     return matchFollowup({ pending: this.pendingFollowup, dir: session.directory, now: Date.now() })
   }
 
   private adoptPendingFollowup(session: Session) {
-    if (!this.adoptFollowupSessions) return false
-
     const now = Date.now()
     const match = this.matchesPendingFollowup(session)
     if (!match) {

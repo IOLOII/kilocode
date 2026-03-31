@@ -125,44 +125,4 @@ describe("KiloProvider follow-up sessions", () => {
       },
     ])
   })
-
-  it("does not adopt pending follow-up sessions in agent manager panels", async () => {
-    const service = connection()
-    const provider = new KiloProvider({} as never, service as never, undefined, {
-      adoptFollowupSessions: false,
-    })
-    const internal = provider as unknown as Internals
-    const sent: unknown[] = []
-
-    internal.webview = {
-      postMessage: async (message: unknown) => {
-        sent.push(message)
-        return true
-      },
-    }
-    internal.syncWebviewState = async () => {}
-    internal.flushPendingSessionRefresh = async () => {}
-    internal.fetchAndSendProviders = async () => {}
-    internal.fetchAndSendAgents = async () => {}
-    internal.fetchAndSendSkills = async () => {}
-    internal.fetchAndSendCommands = async () => {}
-    internal.fetchAndSendConfig = async () => {}
-    internal.fetchAndSendNotifications = async () => {}
-    internal.seedSessionStatusMap = async () => {}
-    internal.sendNotificationSettings = () => {}
-    internal.startStatsPolling = () => {}
-
-    await internal.initializeConnection()
-    sent.length = 0
-
-    internal.pendingFollowup = { dir: "/repo", time: Date.now() }
-    internal.handleLoadMessages = async () => {}
-
-    service.emit(created({ id: "ses-followup", directory: "/repo" }))
-    await Promise.resolve()
-
-    expect(internal.currentSession).toBeNull()
-    expect(internal.trackedSessionIds.has("ses-followup")).toBe(false)
-    expect(sent).toEqual([])
-  })
 })

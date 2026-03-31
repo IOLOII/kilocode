@@ -72,7 +72,6 @@ export class VscodeHost implements Host {
     })
 
     const provider = new KiloProvider(this.extensionUri, this.connectionService, this.context, {
-      adoptFollowupSessions: false,
       slimEditMetadata: true,
     })
     provider.attachToWebview(panel.webview, {
