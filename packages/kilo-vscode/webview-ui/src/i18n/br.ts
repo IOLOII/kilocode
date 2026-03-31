@@ -713,8 +713,6 @@ export const dict = {
 
   "settings.providers.title": "Provedores",
   "settings.providers.description": "Configurações de provedores estarão disponíveis aqui.",
-  "settings.providers.betaNotice":
-    "Atualmente, apenas o provedor Kilo Gateway pode ser configurado na interface de configurações. O suporte para a configuração de outros provedores estará disponível em breve durante o período beta. Enquanto isso, você pode configurar provedores usando a CLI ou o arquivo de configuração. Estamos comprometidos em manter o Kilo aberto, sem lock-in.",
   "settings.providers.section.connected": "Provedores conectados",
   "settings.providers.connected.empty": "Nenhum provedor conectado",
   "settings.providers.section.popular": "Provedores populares",

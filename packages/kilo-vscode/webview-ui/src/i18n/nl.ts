@@ -716,8 +716,6 @@ export const dict = {
 
   "settings.providers.title": "Providers",
   "settings.providers.description": "Provider-instellingen zullen hier configureerbaar zijn.",
-  "settings.providers.betaNotice":
-    "Momenteel kan alleen de Kilo Gateway-provider worden geconfigureerd in de instellingeninterface. Ondersteuning voor het configureren van andere providers komt binnenkort tijdens de bèta-periode. In de tussentijd kun je providers configureren met behulp van de CLI of het configuratiebestand. We zijn toegewijd om Kilo open te houden, geen lock-in.",
   "settings.providers.section.connected": "Gekoppelde providers",
   "settings.providers.connected.empty": "Geen gekoppelde providers",
   "settings.providers.section.popular": "Populaire providers",

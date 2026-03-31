@@ -718,8 +718,6 @@ export const dict = {
 
   "settings.providers.title": "Провайдеры",
   "settings.providers.description": "Настройки провайдеров будут доступны здесь.",
-  "settings.providers.betaNotice":
-    "В настоящее время в интерфейсе настроек можно настроить только провайдер Kilo Gateway. Поддержка настройки других провайдеров скоро появится в период бета-тестирования. А пока вы можете настраивать провайдеров с помощью CLI или конфигурационного файла. Мы стремимся сохранить Kilo открытым — без привязки к поставщикам.",
   "settings.providers.section.connected": "Подключённые провайдеры",
   "settings.providers.connected.empty": "Нет подключённых провайдеров",
   "settings.providers.section.popular": "Популярные провайдеры",

@@ -709,8 +709,6 @@ export const dict = {
 
   "settings.providers.title": "ผู้ให้บริการ",
   "settings.providers.description": "การตั้งค่าผู้ให้บริการจะสามารถกำหนดค่าได้ที่นี่",
-  "settings.providers.betaNotice":
-    "ปัจจุบันสามารถตั้งค่าได้เฉพาะผู้ให้บริการ Kilo Gateway ในหน้าการตั้งค่าเท่านั้น การรองรับการตั้งค่าผู้ให้บริการรายอื่นจะพร้อมใช้งานในเร็วๆ นี้ในช่วงเบต้า ในระหว่างนี้คุณสามารถตั้งค่าผู้ให้บริการผ่าน CLI หรือไฟล์คอนฟิกได้ เรามุ่งมั่นที่จะรักษาให้ Kilo เปิดกว้างและไม่มีการผูกมัด",
   "settings.providers.section.connected": "ผู้ให้บริการที่เชื่อมต่อ",
   "settings.providers.connected.empty": "ไม่มีผู้ให้บริการที่เชื่อมต่อ",
   "settings.providers.section.popular": "ผู้ให้บริการยอดนิยม",

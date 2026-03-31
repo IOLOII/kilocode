@@ -718,8 +718,6 @@ export const dict = {
 
   "settings.providers.title": "Sağlayıcılar",
   "settings.providers.description": "Sağlayıcı ayarları burada yapılandırılabilecek.",
-  "settings.providers.betaNotice":
-    "Şu anda yalnızca Kilo Gateway sağlayıcısı ayarlar arayüzünde yapılandırılabilir. Diğer sağlayıcılar için destek beta döneminde yakında gelecek. Bu arada CLI veya yapılandırma dosyası ile sağlayıcıları yapılandırabilirsiniz. Kilo'yu açık tutmaya kararlıyız, kilitlenme yok.",
   "settings.providers.section.connected": "Bağlı sağlayıcılar",
   "settings.providers.connected.empty": "Bağlı sağlayıcı yok",
   "settings.providers.section.popular": "Popüler sağlayıcılar",
@@ -1232,7 +1230,6 @@ export const dict = {
 
   // Screen 1 — What's New
   "migration.whatsNew.title": "Kilo Code'daki Yenilikler",
-  "migration.whatsNew.badge": "Beta",
   "migration.whatsNew.subtitle": "Uzantıyı daha hızlı ve daha verimli bir temel üzerine yeniden inşa ettik.",
   "migration.whatsNew.features.performance.title": "Daha Hızlı Ajan Performansı",
   "migration.whatsNew.features.performance.detail":
