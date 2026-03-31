@@ -940,6 +940,7 @@ export const dict = {
   "session.status.retry": "Yeniden deneniyor…",
   "session.status.retrying": "Yeniden deneniyor (deneme {{ attempt }})… {{ message }}",
   "session.status.working": "Çalışıyor...",
+  "session.status.finished": "Task complete",
 
   "dialog.model.noProviders": "Sağlayıcı yok",
 

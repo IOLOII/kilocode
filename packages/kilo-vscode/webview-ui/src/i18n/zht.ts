@@ -926,6 +926,7 @@ export const dict = {
   "session.status.retry": "正在重試…",
   "session.status.retrying": "正在重試（第 {{ attempt }} 次）… {{ message }}",
   "session.status.working": "處理中…",
+  "session.status.finished": "Task complete",
 
   "dialog.model.noProviders": "沒有供應商",
 

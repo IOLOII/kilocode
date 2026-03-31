@@ -12,6 +12,7 @@ import { StoryProviders, mockSessionValue } from "./StoryProviders"
 import { ChatView } from "../components/chat/ChatView"
 import { TaskHeader } from "../components/chat/TaskHeader"
 import { QuestionDock } from "../components/chat/QuestionDock"
+import { FinishedIndicator } from "../components/shared/FinishedIndicator"
 import { SessionContext } from "../context/session"
 import { ServerContext } from "../context/server"
 import type { QuestionRequest, TodoItem } from "../types/messages"
@@ -107,6 +108,29 @@ export const ChatViewWithMessages: Story = {
         <SessionContext.Provider value={session as any}>
           <div style={{ width: "100%", height: "200px", display: "flex", "flex-direction": "column" }}>
             <ChatView />
+          </div>
+        </SessionContext.Provider>
+      </StoryProviders>
+    )
+  },
+}
+
+/** ChatView after task finishes — shows the "Task complete" finished indicator */
+export const ChatViewFinished: Story = {
+  name: "ChatView — finished (task complete indicator)",
+  render: () => {
+    const session = {
+      ...mockSessionValue({ id: SESSION_ID, status: "idle" }),
+      messages: () => [{ id: "msg-001" }] as any[],
+      userMessages: () => [{ id: "msg-001" }] as any[],
+      costBreakdown: () => [{ label: "Parent session", cost: 0.0023 }],
+      contextUsage: () => ({ tokens: 1024, percentage: 12 }),
+    }
+    return (
+      <StoryProviders sessionID={SESSION_ID} status="idle" noPadding>
+        <SessionContext.Provider value={session as any}>
+          <div style={{ width: "380px", padding: "8px 0" }}>
+            <FinishedIndicator />
           </div>
         </SessionContext.Provider>
       </StoryProviders>

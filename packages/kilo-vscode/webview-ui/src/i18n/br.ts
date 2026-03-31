@@ -939,6 +939,7 @@ export const dict = {
   "session.status.retry": "Tentando novamente…",
   "session.status.retrying": "Tentando novamente (tentativa {{ attempt }})… {{ message }}",
   "session.status.working": "Trabalhando…",
+  "session.status.finished": "Task complete",
 
   "dialog.model.noProviders": "Nenhum provedor",
 

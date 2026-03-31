@@ -2200,6 +2200,33 @@
   opacity: 0.7;
 }
 
+/* ============================================
+   Finished Indicator
+   ============================================ */
+
+.finished-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--vscode-descriptionForeground);
+  opacity: 0.7;
+}
+
+.finished-icon {
+  flex-shrink: 0;
+  color: var(--vscode-descriptionForeground);
+}
+
+.finished-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Session List (inside History View) */
 .session-list {
   display: flex;

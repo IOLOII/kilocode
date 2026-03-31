@@ -22,6 +22,7 @@ import { RevertBanner } from "./RevertBanner"
 import { AccountSwitcher } from "../shared/AccountSwitcher"
 import { KiloNotifications } from "./KiloNotifications"
 import { WorkingIndicator } from "../shared/WorkingIndicator"
+import { FinishedIndicator } from "../shared/FinishedIndicator"
 import { activeUserMessageID as getActiveUserMessageID } from "../../context/session-queue"
 
 const KiloLogo = (): JSX.Element => {
@@ -161,6 +162,7 @@ export const MessageList: Component<MessageListProps> = (props) => {
               <RevertBanner />
             </Show>
             <WorkingIndicator />
+            <FinishedIndicator />
           </Show>
         </div>
       </div>
