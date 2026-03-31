@@ -4566,6 +4566,7 @@ export type KilocodeSessionImportProjectResponses = {
   200: {
     ok: boolean
     id: string
+    skipped?: boolean
   }
 }
 
@@ -4630,6 +4631,7 @@ export type KilocodeSessionImportSessionResponses = {
   200: {
     ok: boolean
     id: string
+    skipped?: boolean
   }
 }
 
@@ -4713,6 +4715,7 @@ export type KilocodeSessionImportMessageResponses = {
   200: {
     ok: boolean
     id: string
+    skipped?: boolean
   }
 }
 
@@ -4834,6 +4837,7 @@ export type KilocodeSessionImportPartResponses = {
   200: {
     ok: boolean
     id: string
+    skipped?: boolean
   }
 }
 
