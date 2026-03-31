@@ -118,3 +118,7 @@ export function cleanLegacyTaskText(input: string) {
 
   return input
 }
+
+export function isLegacySystemErrorText(input: string) {
+  return input.trimStart().startsWith("[ERROR]")
+}
