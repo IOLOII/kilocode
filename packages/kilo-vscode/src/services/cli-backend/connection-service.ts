@@ -13,6 +13,7 @@ type NotificationDismissListener = (notificationId: string) => void
 type LanguageChangeListener = (locale: string) => void
 type ProfileChangeListener = (data: unknown) => void
 type MigrationCompleteListener = () => void
+type FavoritesChangeListener = (favorites: Array<{ providerID: string; modelID: string }>) => void
 
 // Poll /global/health at the same interval as packages/app/src/context/server.tsx.
 // This provides a second detection channel for server death independent of the SSE heartbeat.
@@ -38,6 +39,7 @@ export class KiloConnectionService {
   private readonly languageChangeListeners: Set<LanguageChangeListener> = new Set()
   private readonly profileChangeListeners: Set<ProfileChangeListener> = new Set()
   private readonly migrationCompleteListeners: Set<MigrationCompleteListener> = new Set()
+  private readonly favoritesChangeListeners: Set<FavoritesChangeListener> = new Set()
 
   /**
    * Shared mapping used to resolve session scope for events that don't reliably include a sessionID.
@@ -229,6 +231,25 @@ export class KiloConnectionService {
   }
 
   /**
+   * Subscribe to favorites change events broadcast from any KiloProvider. Returns unsubscribe function.
+   */
+  onFavoritesChanged(listener: FavoritesChangeListener): () => void {
+    this.favoritesChangeListeners.add(listener)
+    return () => {
+      this.favoritesChangeListeners.delete(listener)
+    }
+  }
+
+  /**
+   * Broadcast a favorites change event to all subscribed KiloProvider instances.
+   */
+  notifyFavoritesChanged(favorites: Array<{ providerID: string; modelID: string }>): void {
+    for (const listener of this.favoritesChangeListeners) {
+      listener(favorites)
+    }
+  }
+
+  /**
    * Subscribe to connection state changes. Returns unsubscribe function.
    */
   onStateChange(listener: StateListener): () => void {
@@ -250,6 +271,7 @@ export class KiloConnectionService {
     this.notificationDismissListeners.clear()
     this.profileChangeListeners.clear()
     this.migrationCompleteListeners.clear()
+    this.favoritesChangeListeners.clear()
     this.messageSessionIdsByMessageId.clear()
     this.client = null
     this.sseClient = null

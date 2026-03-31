@@ -74,6 +74,7 @@ import {
   computeDefaultSelection,
   fetchProviderData,
   validateRecents,
+  validateFavorites,
   connectProvider as connectProviderAction,
   authorizeProviderOAuth as authorizeOAuthAction,
   completeProviderOAuth as completeOAuthAction,
@@ -143,6 +144,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
   private unsubscribeNotificationDismiss: (() => void) | null = null
   private unsubscribeLanguageChange: (() => void) | null = null
   private unsubscribeProfileChange: (() => void) | null = null
+  private unsubscribeFavoritesChange: (() => void) | null = null
   private unsubscribeMigrationComplete: (() => void) | null = null // legacy-migration
   private initConnectionPromise: Promise<void> | null = null
   private webviewMessageDisposable: vscode.Disposable | null = null
@@ -833,6 +835,17 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
           this.postMessage({ type: "recentsLoaded", recents })
           break
         }
+        case "persistFavorites": {
+          const favorites = validateFavorites(message.favorites)
+          await this.extensionContext?.globalState.update("favoriteModels", favorites)
+          this.connectionService.notifyFavoritesChanged(favorites)
+          break
+        }
+        case "requestFavorites": {
+          const favorites = validateFavorites(this.extensionContext?.globalState.get("favoriteModels"))
+          this.postMessage({ type: "favoritesLoaded", favorites })
+          break
+        }
         // legacy-migration start
         case "requestLegacyMigrationData":
           void handleRequestLegacyMigrationData(this.migrationCtx)
@@ -948,6 +961,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.unsubscribeNotificationDismiss?.()
     this.unsubscribeLanguageChange?.()
     this.unsubscribeProfileChange?.()
+    this.unsubscribeFavoritesChange?.()
 
     try {
       const workspaceDir = this.getWorkspaceDirectory()
@@ -1017,6 +1031,11 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
       // Subscribe to profile change broadcast from other KiloProvider instances
       this.unsubscribeProfileChange = this.connectionService.onProfileChanged((data) => {
         this.postMessage({ type: "profileData", data })
+      })
+
+      // Subscribe to favorites change broadcast from other KiloProvider instances
+      this.unsubscribeFavoritesChange = this.connectionService.onFavoritesChanged((favorites) => {
+        this.postMessage({ type: "favoritesLoaded", favorites })
       })
 
       // legacy-migration start
@@ -2852,6 +2871,7 @@ export class KiloProvider implements vscode.WebviewViewProvider, TelemetryProper
     this.unsubscribeNotificationDismiss?.()
     this.unsubscribeLanguageChange?.()
     this.unsubscribeProfileChange?.()
+    this.unsubscribeFavoritesChange?.()
     this.unsubscribeMigrationComplete?.()
     this.webviewMessageDisposable?.dispose()
     this.trackedSessionIds.clear()

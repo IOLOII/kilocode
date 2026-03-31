@@ -853,6 +853,11 @@ export interface RecentsLoadedMessage {
   recents: ModelSelection[]
 }
 
+export interface FavoritesLoadedMessage {
+  type: "favoritesLoaded"
+  favorites: ModelSelection[]
+}
+
 export interface BranchInfo {
   name: string
   isLocal: boolean
@@ -1330,6 +1335,7 @@ export type ExtensionMessage =
   | ProviderActionErrorMessage
   | CustomProviderModelsFetchedMessage
   | RecentsLoadedMessage
+  | FavoritesLoadedMessage
   | LanguageChangedMessage
   | ContinueInWorktreeProgressMessage
   | WorktreeStatsLoadedMessage
@@ -1985,6 +1991,15 @@ export interface RequestRecentsMessage {
   type: "requestRecents"
 }
 
+export interface PersistFavoritesRequest {
+  type: "persistFavorites"
+  favorites: ModelSelection[]
+}
+
+export interface RequestFavoritesMessage {
+  type: "requestFavorites"
+}
+
 // Continue in Worktree: transfer sidebar session + git state to an isolated worktree
 export interface ContinueInWorktreeRequest {
   type: "continueInWorktree"
@@ -2126,6 +2141,8 @@ export type WebviewMessage =
   | FetchCustomProviderModelsMessage
   | PersistRecentsRequest
   | RequestRecentsMessage
+  | PersistFavoritesRequest
+  | RequestFavoritesMessage
   | ContinueInWorktreeRequest
 
 // ============================================

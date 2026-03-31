@@ -61,6 +61,7 @@ interface SessionStore {
   agentSelections: Record<string, string> // sessionID -> agent name
   variantSelections: Record<string, string> // "providerID/modelID" -> variant name
   recentModels: ModelSelection[]
+  favoriteModels: ModelSelection[]
 }
 
 interface SessionContextValue {
@@ -156,6 +157,10 @@ interface SessionContextValue {
   variantList: () => string[]
   currentVariant: () => string | undefined
   selectVariant: (value: string) => void
+
+  // Model favorites
+  favoriteModels: Accessor<ModelSelection[]>
+  toggleFavorite: (providerID: string, modelID: string) => void
 
   // Revert/undo state for the current session
   revert: Accessor<SessionInfo["revert"]>
@@ -319,6 +324,7 @@ export const SessionProvider: ParentComponent = (props) => {
     agentSelections: {},
     variantSelections: {},
     recentModels: [],
+    favoriteModels: [],
   })
 
   // Per-session agent selection
@@ -579,6 +585,25 @@ export const SessionProvider: ParentComponent = (props) => {
   })
   vscode.postMessage({ type: "requestRecents" })
   onCleanup(unsubRecents)
+
+  // Load persisted favorite models from extension globalState
+  const unsubFavorites = vscode.onMessage((message: ExtensionMessage) => {
+    if (message.type !== "favoritesLoaded") return
+    setStore("favoriteModels", message.favorites)
+  })
+  vscode.postMessage({ type: "requestFavorites" })
+  onCleanup(unsubFavorites)
+
+  function toggleFavorite(providerID: string, modelID: string) {
+    const key = `${providerID}/${modelID}`
+    const existing = store.favoriteModels.findIndex((f) => `${f.providerID}/${f.modelID}` === key)
+    const updated =
+      existing >= 0
+        ? store.favoriteModels.filter((_, i) => i !== existing)
+        : [...store.favoriteModels, { providerID, modelID }]
+    setStore("favoriteModels", updated)
+    vscode.postMessage({ type: "persistFavorites", favorites: updated })
+  }
 
   // Handle messages from extension
   onMount(() => {
@@ -1713,6 +1738,8 @@ export const SessionProvider: ParentComponent = (props) => {
     allParts,
     allStatusMap,
     familyData,
+    favoriteModels: () => store.favoriteModels,
+    toggleFavorite,
     variantList,
     currentVariant,
     selectVariant,

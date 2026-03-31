@@ -7,14 +7,25 @@
  * ModelSelector    — thin wrapper wired to session context for chat usage.
  */
 
-import { Component, createSignal, createMemo, createEffect, onCleanup, For, Show, createSelector } from "solid-js"
+import {
+  Component,
+  createSignal,
+  createMemo,
+  createEffect,
+  onCleanup,
+  For,
+  Show,
+  createSelector,
+  useContext,
+} from "solid-js"
 import { PopupSelector } from "./PopupSelector"
 import { Button } from "@kilocode/kilo-ui/button"
 import { IconButton } from "@kilocode/kilo-ui/icon-button"
 import { Tag } from "@kilocode/kilo-ui/tag"
+import { Icon } from "@kilocode/kilo-ui/icon"
 import { Tooltip } from "@kilocode/kilo-ui/tooltip"
 import { useProvider, EnrichedModel } from "../../context/provider"
-import { useSession } from "../../context/session"
+import { useSession, SessionContext } from "../../context/session"
 import { useLanguage } from "../../context/language"
 import type { ModelSelection } from "../../types/messages"
 import {
@@ -30,6 +41,7 @@ import { ModelPreview } from "./ModelPreview"
 interface ModelGroup {
   providerName: string
   models: EnrichedModel[]
+  mixed?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -54,6 +66,9 @@ export interface ModelSelectorBaseProps {
 export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
   const { connected, models, findModel } = useProvider()
   const language = useLanguage()
+  // Session context is optional — ModelSelectorBase is also used in Settings
+  // where SessionProvider may not be mounted.
+  const session = useContext(SessionContext)
   const activeModel = () => findModel(props.value)
 
   const [open, setOpen] = createSignal(false)
@@ -71,6 +86,7 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
   let listRef: HTMLDivElement | undefined
   let bodyRef: HTMLDivElement | undefined
   let previewTimer: ReturnType<typeof setTimeout> | undefined
+  let suppressScroll = false
   const [pointer, setPointer] = createSignal(true)
 
   function onSplitterMouseDown(e: MouseEvent) {
@@ -127,13 +143,26 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
     return visibleModels().filter((m) => m.name.toLowerCase().includes(q))
   })
 
-  // Grouped for rendering — recommended models float to the top as their own group
+  // Build a set of favorited model keys for O(1) lookups
+  const favoriteKeys = createMemo(() => {
+    if (!session) return new Set<string>()
+    return new Set(session.favoriteModels().map((f) => `${f.providerID}/${f.modelID}`))
+  })
+
+  // Grouped for rendering — favorites first, then recommended, then per-provider groups.
+  // Favorited models that are no longer available (provider disconnected, model removed)
+  // are silently omitted — they remain persisted so they reappear when the provider reconnects.
   const groups = createMemo<ModelGroup[]>(() => {
+    const favKeys = favoriteKeys()
+    const favorites: EnrichedModel[] = []
     const recommended: EnrichedModel[] = []
     const map = new Map<string, ModelGroup>()
 
     for (const m of filtered()) {
-      if (m.recommendedIndex !== undefined) {
+      const key = `${m.providerID}/${m.id}`
+      if (favKeys.has(key)) {
+        favorites.push(m)
+      } else if (m.recommendedIndex !== undefined) {
         recommended.push(m)
       } else {
         const group = map.get(m.providerID) ?? { providerName: m.providerName, models: [] }
@@ -142,6 +171,7 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
       }
     }
 
+    favorites.sort((a, b) => a.name.localeCompare(b.name))
     recommended.sort((a, b) => (a.recommendedIndex ?? Infinity) - (b.recommendedIndex ?? Infinity))
 
     for (const group of map.values()) {
@@ -150,9 +180,13 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
 
     const rest = [...map.entries()].sort(([a], [b]) => providerSortKey(a) - providerSortKey(b)).map(([, g]) => g)
 
-    return recommended.length > 0
-      ? [{ providerName: language.t("model.group.recommended"), models: recommended }, ...rest]
-      : rest
+    const result: ModelGroup[] = []
+    if (favorites.length > 0)
+      result.push({ providerName: language.t("model.group.favorites"), models: favorites, mixed: true })
+    if (recommended.length > 0)
+      result.push({ providerName: language.t("model.group.recommended"), models: recommended })
+    result.push(...rest)
+    return result
   })
 
   // Flat list for keyboard indexing (mirrors render order)
@@ -270,6 +304,7 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
 
   function scrollSelectedIntoView() {
     requestAnimationFrame(() => {
+      if (suppressScroll) return
       const el = listRef?.querySelector(".model-selector-item.keyboard-focused")
       el?.scrollIntoView({ block: "nearest" })
     })
@@ -398,72 +433,115 @@ export const ModelSelectorBase: Component<ModelSelectorBaseProps> = (props) => {
               </Show>
 
               <For each={groups()}>
-                {(group) => (
-                  <>
-                    <div class="model-selector-group-label">{group.providerName}</div>
-                    <For each={group.models}>
-                      {(model) => {
-                        const idx = () => flatIndexMap().get(model) ?? 0
-                        const hovered = () => isSelected(idx())
-                        const preActive = () => isPreActive(idx())
-                        const showSelectBtn = () => expanded() && preActive() && !isActive(model)
-                        return (
-                          <div
-                            class={`model-selector-item${(hovered() && !pointer()) || preActive() ? " keyboard-focused" : ""}${hovered() || preActive() ? " selected" : ""}${isActive(model) ? " active" : ""}`}
-                            role="option"
-                            aria-selected={isActive(model)}
-                            onClick={() => {
-                              setSelectedIndex(idx())
-                              setPreActiveIdx(idx())
-                              setPreviewIdx(idx())
-                              if (!expanded()) pick(model)
-                              searchRef?.focus()
-                            }}
-                            onDblClick={() => {
-                              if (expanded()) pick(model)
-                            }}
-                            onMouseMove={() => {
-                              setPointer(true)
-                            }}
-                            onMouseEnter={() => {
-                              if (pointer()) setSelectedIndex(idx())
-                            }}
-                          >
-                            <div class="model-selector-item-left">
-                              <span class="model-selector-item-name">
-                                {(() => {
-                                  const full = sanitizeName(model.name)
-                                  const sep = full.indexOf(": ")
-                                  if (sep < 0) return <span class="model-selector-item-name-main">{full}</span>
-                                  return (
-                                    <>
-                                      <span class="model-selector-item-name-provider">{full.slice(0, sep)}</span>
-                                      <span class="model-selector-item-name-main">{full.slice(sep + 2)}</span>
-                                    </>
-                                  )
-                                })()}
-                              </span>
-                              <Show when={isFree(model)}>
-                                <Tag data-variant="member">{language.t("model.tag.free")}</Tag>
+                {(group) => {
+                  const mixed = group.mixed === true
+                  return (
+                    <>
+                      <div class="model-selector-group-label">{group.providerName}</div>
+                      <For each={group.models}>
+                        {(model) => {
+                          const idx = () => flatIndexMap().get(model) ?? 0
+                          const hovered = () => isSelected(idx())
+                          const preActive = () => isPreActive(idx())
+                          const showSelectBtn = () => expanded() && preActive() && !isActive(model)
+                          const starred = () => favoriteKeys().has(`${model.providerID}/${model.id}`)
+                          return (
+                            <div
+                              class={`model-selector-item${(hovered() && !pointer()) || preActive() ? " keyboard-focused" : ""}${hovered() || preActive() ? " selected" : ""}${isActive(model) ? " active" : ""}`}
+                              role="option"
+                              aria-selected={isActive(model)}
+                              onClick={() => {
+                                setSelectedIndex(idx())
+                                setPreActiveIdx(idx())
+                                setPreviewIdx(idx())
+                                if (!expanded()) pick(model)
+                                searchRef?.focus()
+                              }}
+                              onDblClick={() => {
+                                if (expanded()) pick(model)
+                              }}
+                              onMouseMove={() => {
+                                setPointer(true)
+                              }}
+                              onMouseEnter={() => {
+                                if (pointer()) setSelectedIndex(idx())
+                              }}
+                            >
+                              <div class="model-selector-item-left">
+                                <span class="model-selector-item-name">
+                                  {(() => {
+                                    const full = sanitizeName(model.name)
+                                    const sep = full.indexOf(": ")
+                                    if (sep < 0) return <span class="model-selector-item-name-main">{full}</span>
+                                    return (
+                                      <>
+                                        <span class="model-selector-item-name-provider">{full.slice(0, sep)}</span>
+                                        <span class="model-selector-item-name-main">{full.slice(sep + 2)}</span>
+                                      </>
+                                    )
+                                  })()}
+                                </span>
+                                <Show when={isFree(model)}>
+                                  <Tag data-variant="member">{language.t("model.tag.free")}</Tag>
+                                </Show>
+                                <Show when={mixed}>
+                                  <span class="model-selector-item-provider-tag">{model.providerName}</span>
+                                </Show>
+                              </div>
+                              <Show when={session}>
+                                <button
+                                  type="button"
+                                  class={`model-selector-star${starred() ? " model-selector-star--active" : ""}`}
+                                  aria-label={
+                                    starred() ? language.t("model.favorite.remove") : language.t("model.favorite.add")
+                                  }
+                                  aria-pressed={starred()}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    // Preserve scroll + selection position — toggling moves
+                                    // the model between groups which shifts DOM content and
+                                    // changes all indices in the flat list.
+                                    const scroll = listRef?.scrollTop
+                                    const pos = selectedIndex()
+                                    suppressScroll = true
+                                    session!.toggleFavorite(model.providerID, model.id)
+                                    // Clamp selection to the new list length so it stays
+                                    // in-place (pointing at the next item) instead of
+                                    // following the model to its new group.
+                                    const max = flatFiltered().length - 1 + clearOffset()
+                                    setSelectedIndex(Math.min(pos, max))
+                                    setPreActiveIdx(-1)
+                                    if (scroll !== undefined) {
+                                      queueMicrotask(() => {
+                                        if (listRef) listRef.scrollTop = scroll
+                                        suppressScroll = false
+                                      })
+                                    } else {
+                                      suppressScroll = false
+                                    }
+                                  }}
+                                >
+                                  <Icon name={starred() ? "star-filled" : "star"} size="small" />
+                                </button>
+                              </Show>
+                              <Show when={expanded()}>
+                                <button
+                                  class={`model-selector-item-select-btn${showSelectBtn() ? "" : " model-selector-item-select-btn--hidden"}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    pick(model)
+                                  }}
+                                >
+                                  {language.t("dialog.model.select")}
+                                </button>
                               </Show>
                             </div>
-                            <Show when={expanded()}>
-                              <button
-                                class={`model-selector-item-select-btn${showSelectBtn() ? "" : " model-selector-item-select-btn--hidden"}`}
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  pick(model)
-                                }}
-                              >
-                                {language.t("dialog.model.select")}
-                              </button>
-                            </Show>
-                          </div>
-                        )
-                      }}
-                    </For>
-                  </>
-                )}
+                          )
+                        }}
+                      </For>
+                    </>
+                  )
+                }}
               </For>
             </div>
 
