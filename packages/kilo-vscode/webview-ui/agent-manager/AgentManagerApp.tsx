@@ -1157,6 +1157,14 @@ const AgentManagerContent: Component = () => {
 
       if (msg.type === "agentManager.sessionAdded") {
         const ev = msg as { type: string; sessionId: string; worktreeId: string }
+        if (ev.worktreeId) {
+          saveTabMemory()
+          setSelection(ev.worktreeId)
+        } else if (!localSessionIDs().includes(ev.sessionId)) {
+          saveTabMemory()
+          setLocalSessionIDs((prev) => [...prev, ev.sessionId])
+          setSelection(LOCAL)
+        }
         session.selectSession(ev.sessionId)
       }
 
