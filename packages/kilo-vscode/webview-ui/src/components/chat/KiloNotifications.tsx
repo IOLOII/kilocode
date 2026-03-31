@@ -6,7 +6,7 @@ import { useProvider } from "../../context/provider"
 import { useLanguage } from "../../context/language"
 import { KILO_PROVIDER_ID } from "../../../../src/shared/provider-model"
 import { TelemetryEventName } from "../../../../src/services/telemetry/types"
-import { stripSubProviderPrefix } from "../shared/model-selector-utils"
+import { sanitizeName, stripSubProviderPrefix } from "../shared/model-selector-utils"
 
 export const KiloNotifications: Component = () => {
   const { filteredNotifications, dismiss } = useNotifications()
@@ -62,12 +62,21 @@ export const KiloNotifications: Component = () => {
     return true
   })
 
+  /** Max display-name length before falling back to generic "Try Model" label.
+   * Based on the Kilo Gateway catalog (~336 models as of 2025-07): 97% of
+   * stripped names are under 30 chars. The handful above 30 are verbose
+   * edge-cases (e.g. "Nano Banana 2 (Gemini 3.1 Flash Image Preview)" at 46).
+   */
+  const MAX_NAME = 30
+
   const suggestedName = createMemo(() => {
     const suggestion = suggestedModel()
     if (!suggestion) return undefined
     const model = provider.findModel(suggestion)
     if (!model?.name) return undefined
-    return stripSubProviderPrefix(model.name)
+    const name = stripSubProviderPrefix(sanitizeName(model.name))
+    if (name.length > MAX_NAME) return undefined
+    return name
   })
 
   const handleTryModel = () => {
@@ -97,7 +106,9 @@ export const KiloNotifications: Component = () => {
           <div class="kilo-notifications-footer">
             <Show when={canSwitchModel()}>
               <button class="kilo-notifications-action-btn" onClick={handleTryModel}>
-                {language.t("notifications.action.tryModel", { model: suggestedName() ?? "" })}
+                {suggestedName()
+                  ? language.t("notifications.action.tryModel", { model: suggestedName()! })
+                  : language.t("notifications.action.tryModelGeneric")}
               </button>
             </Show>
             <Show when={current()?.action}>

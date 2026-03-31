@@ -1293,8 +1293,9 @@ export const dict = {
   "settings.saveBar.warning.many": "Flere økter kjører og vil bli avbrutt",
   "settings.saveBar.saveAnyway": "Lagre uansett",
   "settings.saveBar.cancel": "Avbryt",
-  "notifications.action.previous": "Forrige",
-  "notifications.action.next": "Neste",
-  "notifications.action.close": "Lukk",
-  "notifications.action.tryModel": "Prøv {{model}}",
+  "notifications.action.previous": "Previous",
+  "notifications.action.next": "Next",
+  "notifications.action.close": "Close",
+  "notifications.action.tryModel": "Try {{model}}",
+  "notifications.action.tryModelGeneric": "Try Model",
 } satisfies Partial<Record<Keys, string>>
