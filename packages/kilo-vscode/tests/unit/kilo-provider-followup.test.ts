@@ -119,6 +119,7 @@ describe("KiloProvider follow-up sessions", () => {
           title: "Session",
           createdAt: new Date(1).toISOString(),
           updatedAt: new Date(1).toISOString(),
+          parentID: null,
           revert: null,
           summary: null,
         },
