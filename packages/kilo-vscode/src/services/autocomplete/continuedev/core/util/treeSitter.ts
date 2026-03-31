@@ -275,7 +275,7 @@ const GET_SYMBOLS_FOR_NODE_TYPES: SyntaxNode["type"][] = [
 ]
 
 export async function getSymbolsForFile(filepath: string, contents: string): Promise<SymbolWithRange[] | undefined> {
-  //MINIMAL_REPO - continue doesn't use this in autocomplete
+  // Used by Kilo's autocomplete pipeline for symbol extraction
   const parser = await getParserForFile(filepath)
   if (!parser) {
     return

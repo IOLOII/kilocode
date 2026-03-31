@@ -39,7 +39,6 @@ function jaccardSimilarity(a: string, b: string): number {
  * Rank code snippets to be used in tab-autocomplete prompt. Returns a sorted version of the snippet array.
  */
 export function rankAndOrderSnippets(ranges: RankedSnippet[], helper: HelperVars): Required<RankedSnippet>[] {
-  //MINIMAL_REPO - this isn't actually used in continue
   const windowAroundCursor =
     helper.fullPrefix.slice(-helper.options.slidingWindowSize * helper.options.slidingWindowPrefixPercentage) +
     helper.fullSuffix.slice(helper.options.slidingWindowSize * (1 - helper.options.slidingWindowPrefixPercentage))
@@ -113,7 +112,7 @@ function mergeOverlappingRangeContents(first: RangeInFileWithContents, second: R
  * Fill the allowed space with snippets.
  * It is assumed that the snippets are sorted by score.
  */
-export function fillPromptWithSnippets( //MINIMAL_REPO - this isn't actually used in continue
+export function fillPromptWithSnippets(
   snippets: Required<RankedSnippet>[],
   maxSnippetTokens: number,
   modelName: string,

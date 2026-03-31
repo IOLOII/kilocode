@@ -163,7 +163,7 @@ export const getAllSnippets = async ({
     racePromise(contextRetrievalService.getRootPathSnippets(helper)),
     racePromise(contextRetrievalService.getSnippetsFromImportDefinitions(helper)),
     IDE_SNIPPETS_ENABLED ? racePromise(getIdeSnippets(helper, ide, getDefinitionsFromLsp)) : [],
-    [], // racePromise(getDiffSnippets(ide)) // temporarily disabled, see https://github.com/continuedev/continue/pull/5882,
+    [], // getDiffSnippets temporarily disabled
     racePromise(getClipboardSnippets(ide)),
     racePromise(getSnippetsFromRecentlyOpenedFiles(helper, ide)), // giving this one a little more time to complete
     helper.options.experimental_enableStaticContextualization
@@ -209,7 +209,7 @@ export const getAllSnippetsWithoutRace = async ({
     contextRetrievalService.getRootPathSnippets(helper),
     contextRetrievalService.getSnippetsFromImportDefinitions(helper),
     IDE_SNIPPETS_ENABLED ? getIdeSnippets(helper, ide, getDefinitionsFromLsp) : [],
-    [], // racePromise(getDiffSnippets(ide)) // temporarily disabled, see https://github.com/continuedev/continue/pull/5882,
+    [], // getDiffSnippets temporarily disabled
     getClipboardSnippets(ide),
     getSnippetsFromRecentlyOpenedFiles(helper, ide),
     helper.options.experimental_enableStaticContextualization
