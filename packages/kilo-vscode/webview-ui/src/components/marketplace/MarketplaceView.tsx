@@ -1,4 +1,4 @@
-import { createSignal, createMemo, createEffect, onCleanup, onMount, Show } from "solid-js"
+import { createSignal, createMemo, createEffect, on, onCleanup, onMount, Show } from "solid-js"
 import { Tabs } from "@kilocode/kilo-ui/tabs"
 import { Card } from "@kilocode/kilo-ui/card"
 import { Button } from "@kilocode/kilo-ui/button"
@@ -38,7 +38,10 @@ export const MarketplaceView = () => {
   const mcps = createMemo(() => items().filter((i): i is McpMarketplaceItem => i.type === "mcp"))
   const modes = createMemo(() => items().filter((i): i is ModeMarketplaceItem => i.type === "mode"))
 
+  let inflight = false
   const fetchData = () => {
+    if (inflight) return
+    inflight = true
     setFetching(true)
     vscode.postMessage({ type: "fetchMarketplaceData" })
   }
@@ -47,6 +50,7 @@ export const MarketplaceView = () => {
   createEffect(() => {
     const unsub = vscode.onMessage((msg) => {
       if (msg.type === "marketplaceData") {
+        inflight = false
         setItems(msg.marketplaceItems ?? [])
         setMetadata(msg.marketplaceInstalledMetadata ?? EMPTY_METADATA)
         setErrors(msg.errors ?? [])
@@ -73,11 +77,25 @@ export const MarketplaceView = () => {
     onCleanup(unsub)
   })
 
-  // Re-fetch when workspace changes
-  createEffect(() => {
-    server.workspaceDirectory()
-    fetchData()
-  })
+  // Fetch on mount
+  onMount(() => fetchData())
+
+  // Re-fetch when workspace changes (deferred so it skips the initial run)
+  let timer: ReturnType<typeof setTimeout> | undefined
+  createEffect(
+    on(
+      () => server.workspaceDirectory(),
+      () => {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          inflight = false
+          fetchData()
+        }, 300)
+      },
+      { defer: true },
+    ),
+  )
+  onCleanup(() => clearTimeout(timer))
 
   const telemetry = (event: string, properties?: Record<string, unknown>) => {
     vscode.postMessage({ type: "telemetry", event, properties: properties ?? {} })

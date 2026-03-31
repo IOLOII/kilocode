@@ -1,4 +1,4 @@
-import { createSignal, createMemo, For, Show } from "solid-js"
+import { createSignal, createMemo, createEffect, on, onCleanup, For, Show } from "solid-js"
 import { TextField } from "@kilocode/kilo-ui/text-field"
 import { Select } from "@kilocode/kilo-ui/select"
 import { Tag } from "@kilocode/kilo-ui/tag"
@@ -32,6 +32,14 @@ interface Props {
 export const MarketplaceListView = (props: Props) => {
   const { t } = useLanguage()
   const [search, setSearch] = createSignal("")
+  const [query, setQuery] = createSignal("")
+  let debounce: ReturnType<typeof setTimeout> | undefined
+  const updateSearch = (v: string) => {
+    setSearch(v)
+    clearTimeout(debounce)
+    debounce = setTimeout(() => setQuery(v), 150)
+  }
+  onCleanup(() => clearTimeout(debounce))
   const [status, setStatus] = createSignal<StatusOption>({ value: "all", label: t("marketplace.filter.all") })
   const [tags, setTags] = createSignal<string[]>([])
 
@@ -68,7 +76,7 @@ export const MarketplaceListView = (props: Props) => {
   }
 
   const filtered = createMemo(() => {
-    const q = search().toLowerCase()
+    const q = query().toLowerCase()
     const s = status().value
     const active = tags()
     return props.items.filter((item) => {
@@ -87,11 +95,37 @@ export const MarketplaceListView = (props: Props) => {
     })
   })
 
+  // Render items in batches to avoid layout thrashing with large grids
+  const BATCH = 24
+  const [visible, setVisible] = createSignal<MarketplaceItem[]>([])
+  let frame: number | undefined
+  createEffect(
+    on(filtered, (all) => {
+      if (frame) cancelAnimationFrame(frame)
+      if (all.length <= BATCH) {
+        setVisible(all)
+        return
+      }
+      setVisible(all.slice(0, BATCH))
+      let offset = BATCH
+      const step = () => {
+        offset += BATCH
+        if (offset >= all.length) {
+          setVisible(all)
+          return
+        }
+        setVisible(all.slice(0, offset))
+        frame = requestAnimationFrame(step)
+      }
+      frame = requestAnimationFrame(step)
+    }),
+  )
+
   return (
     <div class="marketplace-list">
       <div class="marketplace-filters">
         <div class="marketplace-search-field">
-          <TextField placeholder={props.searchPlaceholder} value={search()} onChange={setSearch} />
+          <TextField placeholder={props.searchPlaceholder} value={search()} onChange={updateSearch} />
         </div>
         <Select
           options={options()}
@@ -126,7 +160,7 @@ export const MarketplaceListView = (props: Props) => {
       >
         <Show when={filtered().length > 0} fallback={<p class="marketplace-empty">{props.emptyMessage}</p>}>
           <div class="marketplace-grid">
-            <For each={filtered()}>
+            <For each={visible()}>
               {(item) => {
                 const skill = item.type === "skill" ? (item as SkillMarketplaceItem) : undefined
                 const mcp = item.type === "mcp" ? (item as McpMarketplaceItem) : undefined

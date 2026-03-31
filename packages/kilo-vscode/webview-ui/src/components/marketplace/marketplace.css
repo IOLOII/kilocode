@@ -98,6 +98,8 @@
   flex-direction: column;
   gap: 8px;
   padding: 12px;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 160px;
 }
 
 .marketplace-card-header {
